@@ -1,3 +1,6 @@
+
+![Generated Image March 21, 2026 - 2_07PM](https://github.com/user-attachments/assets/0bf3385c-9a50-47c3-9bdb-bf5ae8d7bda6)
+
 # IciTranscript
 
 Application macOS de transcription vocale temps réel, propulsée par [voxmlx](https://github.com/voxmlx/voxmlx) (MLX / Apple Silicon).
