@@ -38,8 +38,10 @@ class OllamaService {
 
   static const String _baseUrl = 'http://localhost:11434';
   static const String _model = 'mistral';
-  static const String _ollamaDownloadUrl =
-      'https://github.com/ollama/ollama/releases/latest/download/ollama-darwin';
+  // Ollama pour macOS est distribué sous forme d'app bundle dans un zip.
+  // Le binaire CLI se trouve à Ollama.app/Contents/Resources/ollama.
+  static const String _ollamaZipUrl =
+      'https://github.com/ollama/ollama/releases/latest/download/Ollama-darwin.zip';
 
   Process? _ollamaProcess;
 
@@ -137,29 +139,49 @@ class OllamaService {
   Future<void> _downloadBinary({
     void Function(double progress)? onProgress,
   }) async {
-    _log.info('Téléchargement du binaire ollama...');
+    _log.info('Téléchargement de Ollama-darwin.zip (~106 MB)...');
     await Directory(_binDir).create(recursive: true);
 
-    final File tmpFile = File('$_ollamaBin.tmp');
+    final String zipPath = '$_binDir/Ollama-darwin.zip';
+    final String extractDir = '$_binDir/_extract';
     final Dio dio = Dio();
 
     try {
+      // 1. Télécharger le zip
       await dio.download(
-        _ollamaDownloadUrl,
-        tmpFile.path,
+        _ollamaZipUrl,
+        zipPath,
         onReceiveProgress: (int received, int total) {
           if (total > 0) onProgress?.call(received / total);
         },
       );
+      _log.info('Zip téléchargé: $zipPath');
 
-      await tmpFile.rename(_ollamaBin);
+      // 2. Extraire
+      await Directory(extractDir).create(recursive: true);
+      final ProcessResult unzip = await Process.run(
+        'unzip',
+        <String>['-o', '-q', zipPath, '-d', extractDir],
+      );
+      if (unzip.exitCode != 0) {
+        throw Exception('unzip échoué: ${unzip.stderr}');
+      }
 
-      // Rendre exécutable
+      // 3. Copier le binaire CLI depuis l'app bundle
+      final String binaryInBundle =
+          '$extractDir/Ollama.app/Contents/Resources/ollama';
+      if (!await File(binaryInBundle).exists()) {
+        throw Exception('Binaire ollama introuvable dans le bundle: $binaryInBundle');
+      }
+      await File(binaryInBundle).copy(_ollamaBin);
       await Process.run('chmod', <String>['+x', _ollamaBin]);
-      _log.info('Binaire ollama téléchargé: $_ollamaBin');
-    } catch (e) {
-      await tmpFile.delete().catchError((_) => tmpFile);
-      rethrow;
+      _log.info('Binaire ollama extrait: $_ollamaBin');
+    } finally {
+      // Nettoyage même en cas d'erreur
+      await File(zipPath).delete().catchError((_) => File(zipPath));
+      await Directory(extractDir)
+          .delete(recursive: true)
+          .catchError((_) => Directory(extractDir));
     }
   }
 
