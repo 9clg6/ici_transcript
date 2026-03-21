@@ -79,6 +79,9 @@ class _LiveTranscriptionScreenState
         children: <Widget>[
           // Top toolbar
           _buildToolbar(state, colorScheme, textTheme),
+          // Option Résumé IA (visible seulement quand idle)
+          if (!state.isRecording && !state.isPaused)
+            _buildSummaryOption(state, colorScheme, textTheme),
           // Bannières de permissions
           if (state.micPermission == 'denied')
             _buildPermissionBanner(
@@ -113,6 +116,9 @@ class _LiveTranscriptionScreenState
             ),
           // Transcript area
           Expanded(child: _buildTranscriptArea(state, colorScheme)),
+          // Summary panel (visible après arrêt si résumé activé)
+          if (state.summary != null || state.isSummaryLoading)
+            _buildSummaryPanel(state, colorScheme, textTheme),
           // Bottom status bar
           _buildStatusBar(state, colorScheme),
         ],
@@ -174,14 +180,53 @@ class _LiveTranscriptionScreenState
     );
   }
 
+  Widget _buildSummaryOption(
+    LiveTranscriptionState state,
+    ColorScheme colorScheme,
+    TextTheme textTheme,
+  ) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 6),
+      decoration: BoxDecoration(
+        color: colorScheme.surfaceContainerLowest,
+        border: Border(
+          bottom: BorderSide(
+            color: colorScheme.outlineVariant.withValues(alpha: 0.2),
+          ),
+        ),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: <Widget>[
+          Icon(Icons.auto_awesome, size: 13, color: colorScheme.secondary),
+          const Gap(6),
+          Text(
+            LocaleKeys.transcription_live_summary_option.tr(),
+            style: textTheme.labelSmall?.copyWith(
+              color: colorScheme.onSurfaceVariant,
+              fontSize: 11,
+            ),
+          ),
+          const Gap(6),
+          Switch.adaptive(
+            value: state.isSummaryEnabled,
+            onChanged: (_) => ref
+                .read(liveTranscriptionViewModelProvider.notifier)
+                .toggleSummary(),
+            activeTrackColor: colorScheme.primary,
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildToolbar(
     LiveTranscriptionState state,
     ColorScheme colorScheme,
     TextTheme textTheme,
   ) {
     return Container(
-      height: 56,
-      padding: const EdgeInsets.symmetric(horizontal: 24),
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
       decoration: BoxDecoration(
         color: colorScheme.surface,
         border: Border(
@@ -194,30 +239,33 @@ class _LiveTranscriptionScreenState
         children: <Widget>[
           // Server status indicator
           ServerStatusWidget(serverState: state.serverState),
-          const Spacer(),
-          // Timer
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Text(
-                _formatDuration(state.duration),
-                style: textTheme.titleLarge?.copyWith(
-                  fontFamily: 'monospace',
-                  fontWeight: FontWeight.bold,
-                  color: colorScheme.onSurface,
-                ),
+          // Timer (centered in remaining space)
+          Expanded(
+            child: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Text(
+                    _formatDuration(state.duration),
+                    style: textTheme.titleLarge?.copyWith(
+                      fontFamily: 'monospace',
+                      fontWeight: FontWeight.bold,
+                      color: colorScheme.onSurface,
+                    ),
+                  ),
+                  Text(
+                    LocaleKeys.transcription_live_recording_time.tr(),
+                    overflow: TextOverflow.ellipsis,
+                    style: textTheme.labelSmall?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                      letterSpacing: 1.5,
+                      fontSize: 9,
+                    ),
+                  ),
+                ],
               ),
-              Text(
-                LocaleKeys.transcription_live_recording_time.tr(),
-                style: textTheme.labelSmall?.copyWith(
-                  color: colorScheme.onSurfaceVariant,
-                  letterSpacing: 1.5,
-                  fontSize: 9,
-                ),
-              ),
-            ],
+            ),
           ),
-          const Spacer(),
           // Transport controls
           SessionControlsWidget(
             isRecording: state.isRecording,
@@ -287,6 +335,79 @@ class _LiveTranscriptionScreenState
           child: TranscriptLineWidget(segment: state.segments[index]),
         );
       },
+    );
+  }
+
+  Widget _buildSummaryPanel(
+    LiveTranscriptionState state,
+    ColorScheme colorScheme,
+    TextTheme textTheme,
+  ) {
+    return Container(
+      constraints: const BoxConstraints(maxHeight: 180),
+      decoration: BoxDecoration(
+        color: colorScheme.secondaryContainer.withValues(alpha: 0.4),
+        border: Border(
+          top: BorderSide(
+            color: colorScheme.outlineVariant.withValues(alpha: 0.3),
+          ),
+        ),
+      ),
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 48, vertical: 16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Row(
+              children: <Widget>[
+                Icon(
+                  Icons.auto_awesome,
+                  size: 14,
+                  color: colorScheme.secondary,
+                ),
+                const Gap(6),
+                Text(
+                  LocaleKeys.transcription_live_summary_title.tr(),
+                  style: textTheme.labelMedium?.copyWith(
+                    color: colorScheme.secondary,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+              ],
+            ),
+            const Gap(8),
+            if (state.isSummaryLoading)
+              Row(
+                children: <Widget>[
+                  SizedBox(
+                    width: 14,
+                    height: 14,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: colorScheme.secondary,
+                    ),
+                  ),
+                  const Gap(8),
+                  Text(
+                    LocaleKeys.transcription_live_summary_loading.tr(),
+                    style: textTheme.bodySmall?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              )
+            else
+              Text(
+                state.summary ?? '',
+                style: textTheme.bodySmall?.copyWith(
+                  color: colorScheme.onSurface,
+                  height: 1.5,
+                ),
+              ),
+          ],
+        ),
+      ),
     );
   }
 

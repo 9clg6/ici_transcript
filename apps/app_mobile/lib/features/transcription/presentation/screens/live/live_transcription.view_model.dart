@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'dart:io';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/services.dart';
 import 'package:core_domain/domain/entities/transcript_segment.entity.dart';
 import 'package:core_domain/domain/enum/server_state.enum.dart';
@@ -47,7 +49,7 @@ class LiveTranscriptionViewModel extends _$LiveTranscriptionViewModel {
       ServerState serverState,
     ) {
       state = state.copyWith(serverState: serverState);
-        });
+    });
 
     // Ecoute les segments de la transcription
     _liveService?.segmentsStream.listen((
@@ -55,7 +57,7 @@ class LiveTranscriptionViewModel extends _$LiveTranscriptionViewModel {
     ) {
       _log.debug('Segments mis a jour: ${segments.length}');
       state = state.copyWith(segments: segments);
-        });
+    });
 
     // Ecoute l'etat d'enregistrement
     _liveService?.isRecordingStream.listen((bool isRecording) {
@@ -65,22 +67,21 @@ class LiveTranscriptionViewModel extends _$LiveTranscriptionViewModel {
         _durationTimer?.cancel();
         _durationTimer = null;
       }
-        });
+    });
   }
 
   /// Demarre une nouvelle session de transcription.
   Future<void> startSession() async {
     _log.info('startSession() appele');
 
-    // Mettre a jour l'UI immediatement
     state = state.copyWith(
       isRecording: true,
       isPaused: false,
       segments: <TranscriptSegmentEntity>[],
       duration: Duration.zero,
+      summary: null,
     );
 
-    // Demarrer le timer
     _startDurationTimer();
 
     try {
@@ -112,18 +113,31 @@ class LiveTranscriptionViewModel extends _$LiveTranscriptionViewModel {
         );
       }
       _durationTimer?.cancel();
-      // Nettoyage propre : arrête audio, WebSocket et session côté Dart
-      // (évite le double-stop Swift + Dart)
       await _liveService?.stopTranscription();
     }
   }
 
-  /// Arrete la session.
+  /// Arrete la session, sauvegarde la transcription et génère un résumé si activé.
   Future<void> stopSession() async {
     _durationTimer?.cancel();
     _durationTimer = null;
     await _liveService?.stopTranscription();
+
+    final List<TranscriptSegmentEntity> segments = state.segments;
     state = state.copyWith(isRecording: false, isPaused: false);
+
+    // Sauvegarder la transcription en local
+    await _saveTranscriptToFile(segments);
+
+    // Générer le résumé si l'option est activée
+    if (state.isSummaryEnabled && segments.isNotEmpty) {
+      await _generateSummary(segments);
+    }
+  }
+
+  /// Active ou désactive l'option résumé IA.
+  void toggleSummary() {
+    state = state.copyWith(isSummaryEnabled: !state.isSummaryEnabled);
   }
 
   /// Met en pause.
@@ -162,6 +176,10 @@ class LiveTranscriptionViewModel extends _$LiveTranscriptionViewModel {
     await _liveService?.openSystemSettings('screenRecording');
   }
 
+  // ---------------------------------------------------------------------------
+  // Private
+  // ---------------------------------------------------------------------------
+
   void _startDurationTimer() {
     _durationTimer?.cancel();
     _durationTimer = Timer.periodic(const Duration(seconds: 1), (_) {
@@ -171,5 +189,96 @@ class LiveTranscriptionViewModel extends _$LiveTranscriptionViewModel {
         );
       }
     });
+  }
+
+  /// Sauvegarde la transcription dans un fichier texte local.
+  Future<void> _saveTranscriptToFile(
+    List<TranscriptSegmentEntity> segments,
+  ) async {
+    if (segments.isEmpty) return;
+    try {
+      final String home = Platform.environment['HOME'] ?? '';
+      final Directory dir = Directory(
+        '$home/Library/Application Support/IciTranscript/transcripts',
+      );
+      await dir.create(recursive: true);
+
+      final String timestamp = DateTime.now()
+          .toIso8601String()
+          .replaceAll(':', '-')
+          .replaceAll('.', '-');
+      final File file = File('${dir.path}/transcript_$timestamp.txt');
+
+      final StringBuffer buffer = StringBuffer();
+      for (final TranscriptSegmentEntity segment in segments) {
+        final Duration ts = Duration(milliseconds: segment.timestampMs);
+        final String time =
+            '${ts.inMinutes.toString().padLeft(2, '0')}:${(ts.inSeconds % 60).toString().padLeft(2, '0')}';
+        buffer.writeln('[$time] ${segment.text}');
+      }
+
+      await file.writeAsString(buffer.toString());
+      _log.info('Transcription sauvegardee: ${file.path}');
+    } catch (e) {
+      _log.error('Erreur sauvegarde transcription: $e');
+    }
+  }
+
+  /// Génère un résumé via Claude API.
+  Future<void> _generateSummary(List<TranscriptSegmentEntity> segments) async {
+    final String? apiKey = Platform.environment['ANTHROPIC_API_KEY'];
+    if (apiKey == null || apiKey.isEmpty) {
+      state = state.copyWith(
+        summary: 'ANTHROPIC_API_KEY non configurée.',
+      );
+      return;
+    }
+
+    state = state.copyWith(isSummaryLoading: true);
+
+    try {
+      final String transcript = segments
+          .map((TranscriptSegmentEntity s) => s.text)
+          .join('\n');
+
+      final Dio dio = Dio();
+      final Response<Map<String, dynamic>> response = await dio.post<
+          Map<String, dynamic>>(
+        'https://api.anthropic.com/v1/messages',
+        data: <String, dynamic>{
+          'model': 'claude-haiku-4-5-20251001',
+          'max_tokens': 512,
+          'messages': <Map<String, dynamic>>[
+            <String, dynamic>{
+              'role': 'user',
+              'content':
+                  'Résume en français de manière concise cette transcription de conversation :\n\n$transcript',
+            },
+          ],
+        },
+        options: Options(
+          headers: <String, String>{
+            'x-api-key': apiKey,
+            'anthropic-version': '2023-06-01',
+            'content-type': 'application/json',
+          },
+        ),
+      );
+
+      final List<dynamic> content =
+          response.data?['content'] as List<dynamic>? ?? <dynamic>[];
+      final String summary = content.isNotEmpty
+          ? (content.first as Map<String, dynamic>)['text'] as String? ?? ''
+          : '';
+
+      state = state.copyWith(isSummaryLoading: false, summary: summary);
+      _log.info('Résumé généré');
+    } catch (e) {
+      _log.error('Erreur génération résumé: $e');
+      state = state.copyWith(
+        isSummaryLoading: false,
+        summary: 'Erreur lors de la génération du résumé.',
+      );
+    }
   }
 }

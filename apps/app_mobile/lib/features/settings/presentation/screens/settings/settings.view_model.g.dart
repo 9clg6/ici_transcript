@@ -6,7 +6,7 @@ part of 'settings.view_model.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$settingsViewModelHash() => r'ae6eeda906ae9cff49a564f90300072ee0e2b6a1';
+String _$settingsViewModelHash() => r'66d52f3ed89b2f59f35d97686d2a6228c60697bd';
 
 /// ViewModel de l'ecran des reglages.
 ///

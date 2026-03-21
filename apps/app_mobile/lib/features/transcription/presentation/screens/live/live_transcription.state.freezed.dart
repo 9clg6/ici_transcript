@@ -24,7 +24,10 @@ mixin _$LiveTranscriptionState {
 /// Valeurs : "authorized", "denied", "notDetermined", "restricted", "unknown".
  String get micPermission;/// Statut de la permission Screen Recording.
 /// Valeurs : "authorized", "denied", "notDetermined", "unknown".
- String get screenRecordingPermission;
+ String get screenRecordingPermission;/// Indique si l'option résumé IA est activée.
+ bool get isSummaryEnabled;/// Résumé IA de la session (null si pas encore généré).
+ String? get summary;/// Indique si le résumé est en cours de génération.
+ bool get isSummaryLoading;
 /// Create a copy of LiveTranscriptionState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -35,16 +38,16 @@ $LiveTranscriptionStateCopyWith<LiveTranscriptionState> get copyWith => _$LiveTr
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is LiveTranscriptionState&&const DeepCollectionEquality().equals(other.segments, segments)&&(identical(other.isRecording, isRecording) || other.isRecording == isRecording)&&(identical(other.isPaused, isPaused) || other.isPaused == isPaused)&&(identical(other.duration, duration) || other.duration == duration)&&(identical(other.serverState, serverState) || other.serverState == serverState)&&(identical(other.sessionTitle, sessionTitle) || other.sessionTitle == sessionTitle)&&(identical(other.micPermission, micPermission) || other.micPermission == micPermission)&&(identical(other.screenRecordingPermission, screenRecordingPermission) || other.screenRecordingPermission == screenRecordingPermission));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is LiveTranscriptionState&&const DeepCollectionEquality().equals(other.segments, segments)&&(identical(other.isRecording, isRecording) || other.isRecording == isRecording)&&(identical(other.isPaused, isPaused) || other.isPaused == isPaused)&&(identical(other.duration, duration) || other.duration == duration)&&(identical(other.serverState, serverState) || other.serverState == serverState)&&(identical(other.sessionTitle, sessionTitle) || other.sessionTitle == sessionTitle)&&(identical(other.micPermission, micPermission) || other.micPermission == micPermission)&&(identical(other.screenRecordingPermission, screenRecordingPermission) || other.screenRecordingPermission == screenRecordingPermission)&&(identical(other.isSummaryEnabled, isSummaryEnabled) || other.isSummaryEnabled == isSummaryEnabled)&&(identical(other.summary, summary) || other.summary == summary)&&(identical(other.isSummaryLoading, isSummaryLoading) || other.isSummaryLoading == isSummaryLoading));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(segments),isRecording,isPaused,duration,serverState,sessionTitle,micPermission,screenRecordingPermission);
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(segments),isRecording,isPaused,duration,serverState,sessionTitle,micPermission,screenRecordingPermission,isSummaryEnabled,summary,isSummaryLoading);
 
 @override
 String toString() {
-  return 'LiveTranscriptionState(segments: $segments, isRecording: $isRecording, isPaused: $isPaused, duration: $duration, serverState: $serverState, sessionTitle: $sessionTitle, micPermission: $micPermission, screenRecordingPermission: $screenRecordingPermission)';
+  return 'LiveTranscriptionState(segments: $segments, isRecording: $isRecording, isPaused: $isPaused, duration: $duration, serverState: $serverState, sessionTitle: $sessionTitle, micPermission: $micPermission, screenRecordingPermission: $screenRecordingPermission, isSummaryEnabled: $isSummaryEnabled, summary: $summary, isSummaryLoading: $isSummaryLoading)';
 }
 
 
@@ -55,7 +58,7 @@ abstract mixin class $LiveTranscriptionStateCopyWith<$Res>  {
   factory $LiveTranscriptionStateCopyWith(LiveTranscriptionState value, $Res Function(LiveTranscriptionState) _then) = _$LiveTranscriptionStateCopyWithImpl;
 @useResult
 $Res call({
- List<TranscriptSegmentEntity> segments, bool isRecording, bool isPaused, Duration duration, ServerState serverState, String? sessionTitle, String micPermission, String screenRecordingPermission
+ List<TranscriptSegmentEntity> segments, bool isRecording, bool isPaused, Duration duration, ServerState serverState, String? sessionTitle, String micPermission, String screenRecordingPermission, bool isSummaryEnabled, String? summary, bool isSummaryLoading
 });
 
 
@@ -72,7 +75,7 @@ class _$LiveTranscriptionStateCopyWithImpl<$Res>
 
 /// Create a copy of LiveTranscriptionState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? segments = null,Object? isRecording = null,Object? isPaused = null,Object? duration = null,Object? serverState = null,Object? sessionTitle = freezed,Object? micPermission = null,Object? screenRecordingPermission = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? segments = null,Object? isRecording = null,Object? isPaused = null,Object? duration = null,Object? serverState = null,Object? sessionTitle = freezed,Object? micPermission = null,Object? screenRecordingPermission = null,Object? isSummaryEnabled = null,Object? summary = freezed,Object? isSummaryLoading = null,}) {
   return _then(_self.copyWith(
 segments: null == segments ? _self.segments : segments // ignore: cast_nullable_to_non_nullable
 as List<TranscriptSegmentEntity>,isRecording: null == isRecording ? _self.isRecording : isRecording // ignore: cast_nullable_to_non_nullable
@@ -82,7 +85,10 @@ as Duration,serverState: null == serverState ? _self.serverState : serverState /
 as ServerState,sessionTitle: freezed == sessionTitle ? _self.sessionTitle : sessionTitle // ignore: cast_nullable_to_non_nullable
 as String?,micPermission: null == micPermission ? _self.micPermission : micPermission // ignore: cast_nullable_to_non_nullable
 as String,screenRecordingPermission: null == screenRecordingPermission ? _self.screenRecordingPermission : screenRecordingPermission // ignore: cast_nullable_to_non_nullable
-as String,
+as String,isSummaryEnabled: null == isSummaryEnabled ? _self.isSummaryEnabled : isSummaryEnabled // ignore: cast_nullable_to_non_nullable
+as bool,summary: freezed == summary ? _self.summary : summary // ignore: cast_nullable_to_non_nullable
+as String?,isSummaryLoading: null == isSummaryLoading ? _self.isSummaryLoading : isSummaryLoading // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 
@@ -167,10 +173,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<TranscriptSegmentEntity> segments,  bool isRecording,  bool isPaused,  Duration duration,  ServerState serverState,  String? sessionTitle,  String micPermission,  String screenRecordingPermission)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<TranscriptSegmentEntity> segments,  bool isRecording,  bool isPaused,  Duration duration,  ServerState serverState,  String? sessionTitle,  String micPermission,  String screenRecordingPermission,  bool isSummaryEnabled,  String? summary,  bool isSummaryLoading)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _LiveTranscriptionState() when $default != null:
-return $default(_that.segments,_that.isRecording,_that.isPaused,_that.duration,_that.serverState,_that.sessionTitle,_that.micPermission,_that.screenRecordingPermission);case _:
+return $default(_that.segments,_that.isRecording,_that.isPaused,_that.duration,_that.serverState,_that.sessionTitle,_that.micPermission,_that.screenRecordingPermission,_that.isSummaryEnabled,_that.summary,_that.isSummaryLoading);case _:
   return orElse();
 
 }
@@ -188,10 +194,10 @@ return $default(_that.segments,_that.isRecording,_that.isPaused,_that.duration,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<TranscriptSegmentEntity> segments,  bool isRecording,  bool isPaused,  Duration duration,  ServerState serverState,  String? sessionTitle,  String micPermission,  String screenRecordingPermission)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<TranscriptSegmentEntity> segments,  bool isRecording,  bool isPaused,  Duration duration,  ServerState serverState,  String? sessionTitle,  String micPermission,  String screenRecordingPermission,  bool isSummaryEnabled,  String? summary,  bool isSummaryLoading)  $default,) {final _that = this;
 switch (_that) {
 case _LiveTranscriptionState():
-return $default(_that.segments,_that.isRecording,_that.isPaused,_that.duration,_that.serverState,_that.sessionTitle,_that.micPermission,_that.screenRecordingPermission);case _:
+return $default(_that.segments,_that.isRecording,_that.isPaused,_that.duration,_that.serverState,_that.sessionTitle,_that.micPermission,_that.screenRecordingPermission,_that.isSummaryEnabled,_that.summary,_that.isSummaryLoading);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -208,10 +214,10 @@ return $default(_that.segments,_that.isRecording,_that.isPaused,_that.duration,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<TranscriptSegmentEntity> segments,  bool isRecording,  bool isPaused,  Duration duration,  ServerState serverState,  String? sessionTitle,  String micPermission,  String screenRecordingPermission)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<TranscriptSegmentEntity> segments,  bool isRecording,  bool isPaused,  Duration duration,  ServerState serverState,  String? sessionTitle,  String micPermission,  String screenRecordingPermission,  bool isSummaryEnabled,  String? summary,  bool isSummaryLoading)?  $default,) {final _that = this;
 switch (_that) {
 case _LiveTranscriptionState() when $default != null:
-return $default(_that.segments,_that.isRecording,_that.isPaused,_that.duration,_that.serverState,_that.sessionTitle,_that.micPermission,_that.screenRecordingPermission);case _:
+return $default(_that.segments,_that.isRecording,_that.isPaused,_that.duration,_that.serverState,_that.sessionTitle,_that.micPermission,_that.screenRecordingPermission,_that.isSummaryEnabled,_that.summary,_that.isSummaryLoading);case _:
   return null;
 
 }
@@ -223,7 +229,7 @@ return $default(_that.segments,_that.isRecording,_that.isPaused,_that.duration,_
 
 
 class _LiveTranscriptionState implements LiveTranscriptionState {
-  const _LiveTranscriptionState({required final  List<TranscriptSegmentEntity> segments, this.isRecording = false, this.isPaused = false, this.duration = Duration.zero, this.serverState = ServerState.stopped, this.sessionTitle, this.micPermission = 'unknown', this.screenRecordingPermission = 'unknown'}): _segments = segments;
+  const _LiveTranscriptionState({required final  List<TranscriptSegmentEntity> segments, this.isRecording = false, this.isPaused = false, this.duration = Duration.zero, this.serverState = ServerState.stopped, this.sessionTitle, this.micPermission = 'unknown', this.screenRecordingPermission = 'unknown', this.isSummaryEnabled = false, this.summary, this.isSummaryLoading = false}): _segments = segments;
   
 
 /// Liste des segments de transcription de la session courante.
@@ -251,6 +257,12 @@ class _LiveTranscriptionState implements LiveTranscriptionState {
 /// Statut de la permission Screen Recording.
 /// Valeurs : "authorized", "denied", "notDetermined", "unknown".
 @override@JsonKey() final  String screenRecordingPermission;
+/// Indique si l'option résumé IA est activée.
+@override@JsonKey() final  bool isSummaryEnabled;
+/// Résumé IA de la session (null si pas encore généré).
+@override final  String? summary;
+/// Indique si le résumé est en cours de génération.
+@override@JsonKey() final  bool isSummaryLoading;
 
 /// Create a copy of LiveTranscriptionState
 /// with the given fields replaced by the non-null parameter values.
@@ -262,16 +274,16 @@ _$LiveTranscriptionStateCopyWith<_LiveTranscriptionState> get copyWith => __$Liv
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _LiveTranscriptionState&&const DeepCollectionEquality().equals(other._segments, _segments)&&(identical(other.isRecording, isRecording) || other.isRecording == isRecording)&&(identical(other.isPaused, isPaused) || other.isPaused == isPaused)&&(identical(other.duration, duration) || other.duration == duration)&&(identical(other.serverState, serverState) || other.serverState == serverState)&&(identical(other.sessionTitle, sessionTitle) || other.sessionTitle == sessionTitle)&&(identical(other.micPermission, micPermission) || other.micPermission == micPermission)&&(identical(other.screenRecordingPermission, screenRecordingPermission) || other.screenRecordingPermission == screenRecordingPermission));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _LiveTranscriptionState&&const DeepCollectionEquality().equals(other._segments, _segments)&&(identical(other.isRecording, isRecording) || other.isRecording == isRecording)&&(identical(other.isPaused, isPaused) || other.isPaused == isPaused)&&(identical(other.duration, duration) || other.duration == duration)&&(identical(other.serverState, serverState) || other.serverState == serverState)&&(identical(other.sessionTitle, sessionTitle) || other.sessionTitle == sessionTitle)&&(identical(other.micPermission, micPermission) || other.micPermission == micPermission)&&(identical(other.screenRecordingPermission, screenRecordingPermission) || other.screenRecordingPermission == screenRecordingPermission)&&(identical(other.isSummaryEnabled, isSummaryEnabled) || other.isSummaryEnabled == isSummaryEnabled)&&(identical(other.summary, summary) || other.summary == summary)&&(identical(other.isSummaryLoading, isSummaryLoading) || other.isSummaryLoading == isSummaryLoading));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_segments),isRecording,isPaused,duration,serverState,sessionTitle,micPermission,screenRecordingPermission);
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_segments),isRecording,isPaused,duration,serverState,sessionTitle,micPermission,screenRecordingPermission,isSummaryEnabled,summary,isSummaryLoading);
 
 @override
 String toString() {
-  return 'LiveTranscriptionState(segments: $segments, isRecording: $isRecording, isPaused: $isPaused, duration: $duration, serverState: $serverState, sessionTitle: $sessionTitle, micPermission: $micPermission, screenRecordingPermission: $screenRecordingPermission)';
+  return 'LiveTranscriptionState(segments: $segments, isRecording: $isRecording, isPaused: $isPaused, duration: $duration, serverState: $serverState, sessionTitle: $sessionTitle, micPermission: $micPermission, screenRecordingPermission: $screenRecordingPermission, isSummaryEnabled: $isSummaryEnabled, summary: $summary, isSummaryLoading: $isSummaryLoading)';
 }
 
 
@@ -282,7 +294,7 @@ abstract mixin class _$LiveTranscriptionStateCopyWith<$Res> implements $LiveTran
   factory _$LiveTranscriptionStateCopyWith(_LiveTranscriptionState value, $Res Function(_LiveTranscriptionState) _then) = __$LiveTranscriptionStateCopyWithImpl;
 @override @useResult
 $Res call({
- List<TranscriptSegmentEntity> segments, bool isRecording, bool isPaused, Duration duration, ServerState serverState, String? sessionTitle, String micPermission, String screenRecordingPermission
+ List<TranscriptSegmentEntity> segments, bool isRecording, bool isPaused, Duration duration, ServerState serverState, String? sessionTitle, String micPermission, String screenRecordingPermission, bool isSummaryEnabled, String? summary, bool isSummaryLoading
 });
 
 
@@ -299,7 +311,7 @@ class __$LiveTranscriptionStateCopyWithImpl<$Res>
 
 /// Create a copy of LiveTranscriptionState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? segments = null,Object? isRecording = null,Object? isPaused = null,Object? duration = null,Object? serverState = null,Object? sessionTitle = freezed,Object? micPermission = null,Object? screenRecordingPermission = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? segments = null,Object? isRecording = null,Object? isPaused = null,Object? duration = null,Object? serverState = null,Object? sessionTitle = freezed,Object? micPermission = null,Object? screenRecordingPermission = null,Object? isSummaryEnabled = null,Object? summary = freezed,Object? isSummaryLoading = null,}) {
   return _then(_LiveTranscriptionState(
 segments: null == segments ? _self._segments : segments // ignore: cast_nullable_to_non_nullable
 as List<TranscriptSegmentEntity>,isRecording: null == isRecording ? _self.isRecording : isRecording // ignore: cast_nullable_to_non_nullable
@@ -309,7 +321,10 @@ as Duration,serverState: null == serverState ? _self.serverState : serverState /
 as ServerState,sessionTitle: freezed == sessionTitle ? _self.sessionTitle : sessionTitle // ignore: cast_nullable_to_non_nullable
 as String?,micPermission: null == micPermission ? _self.micPermission : micPermission // ignore: cast_nullable_to_non_nullable
 as String,screenRecordingPermission: null == screenRecordingPermission ? _self.screenRecordingPermission : screenRecordingPermission // ignore: cast_nullable_to_non_nullable
-as String,
+as String,isSummaryEnabled: null == isSummaryEnabled ? _self.isSummaryEnabled : isSummaryEnabled // ignore: cast_nullable_to_non_nullable
+as bool,summary: freezed == summary ? _self.summary : summary // ignore: cast_nullable_to_non_nullable
+as String?,isSummaryLoading: null == isSummaryLoading ? _self.isSummaryLoading : isSummaryLoading // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 

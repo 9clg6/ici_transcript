@@ -6,7 +6,7 @@ part of 'kernel.provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$kernelHash() => r'9bc331f656a444ec40f2217aeb47ea8cde28ebcd';
+String _$kernelHash() => r'482defeffe9277afae93a00eee75b12229f2d9bd';
 
 /// Initialise les dependances au demarrage de l'application.
 ///

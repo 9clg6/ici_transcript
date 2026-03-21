@@ -7,7 +7,7 @@ part of 'live_transcription.view_model.dart';
 // **************************************************************************
 
 String _$liveTranscriptionViewModelHash() =>
-    r'1c5fb2d69b9a0748e62db7a212c21ba6428e9c3f';
+    r'ab673f4a55282995ca24887883610ce9f9f6e150';
 
 /// ViewModel de l'ecran de transcription en direct.
 ///

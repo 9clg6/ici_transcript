@@ -34,6 +34,15 @@ abstract class LiveTranscriptionState with _$LiveTranscriptionState {
     /// Statut de la permission Screen Recording.
     /// Valeurs : "authorized", "denied", "notDetermined", "unknown".
     @Default('unknown') String screenRecordingPermission,
+
+    /// Indique si l'option résumé IA est activée.
+    @Default(false) bool isSummaryEnabled,
+
+    /// Résumé IA de la session (null si pas encore généré).
+    String? summary,
+
+    /// Indique si le résumé est en cours de génération.
+    @Default(false) bool isSummaryLoading,
   }) = _LiveTranscriptionState;
 
   /// Etat initial par defaut.

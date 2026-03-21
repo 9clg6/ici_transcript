@@ -1,9 +1,14 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
+import 'package:ici_transcript/generated/locale_keys.g.dart';
 
-/// Widget de controle de session : boutons Play/Pause/Resume/Stop.
+/// Widget de controle de session : boutons Démarrer / Arrêter / Pause.
 ///
-/// Affiche un groupe de boutons segmentes (pill style) pour controler
-/// le demarrage, la pause, la reprise et l'arret de l'enregistrement.
+/// Affiche :
+/// - Quand idle : bouton "Démarrer" prominent
+/// - Quand en cours : boutons "Pause" et "Arrêter"
+/// - Quand en pause : boutons "Reprendre" et "Arrêter"
 class SessionControlsWidget extends StatelessWidget {
   /// Cree une instance de [SessionControlsWidget].
   const SessionControlsWidget({
@@ -38,79 +43,63 @@ class SessionControlsWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final ColorScheme colorScheme = Theme.of(context).colorScheme;
 
-    return Container(
-      padding: const EdgeInsets.all(4),
-      decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerHigh,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          // Play button
-          _ControlButton(
-            icon: Icons.play_circle_outline,
-            isActive: !isRecording && !isPaused,
-            onPressed: isRecording || isPaused ? onResume : onStart,
-            activeColor: colorScheme.onSurfaceVariant,
-            backgroundColor: colorScheme.surfaceContainerHighest,
-          ),
-          // Pause button
-          _ControlButton(
-            icon: Icons.pause_circle_filled,
-            isActive: isRecording && !isPaused,
-            onPressed: onPause,
-            activeColor: colorScheme.onPrimary,
-            backgroundColor: colorScheme.primary,
-          ),
-          // Stop button
-          _ControlButton(
-            icon: Icons.stop_circle_outlined,
-            isActive: false,
-            onPressed: onStop,
-            activeColor: colorScheme.error,
-            backgroundColor: colorScheme.errorContainer.withValues(alpha: 0.3),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _ControlButton extends StatelessWidget {
-  const _ControlButton({
-    required this.icon,
-    required this.isActive,
-    required this.onPressed,
-    required this.activeColor,
-    required this.backgroundColor,
-  });
-
-  final IconData icon;
-  final bool isActive;
-  final VoidCallback onPressed;
-  final Color activeColor;
-  final Color backgroundColor;
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: isActive ? backgroundColor : Colors.transparent,
-      borderRadius: BorderRadius.circular(8),
-      child: InkWell(
-        onTap: onPressed,
-        borderRadius: BorderRadius.circular(8),
-        child: Padding(
-          padding: const EdgeInsets.all(8),
-          child: Icon(
-            icon,
-            size: 20,
-            color: isActive
-                ? activeColor
-                : Theme.of(context).colorScheme.onSurfaceVariant,
+    if (!isRecording && !isPaused) {
+      // Idle — bouton Démarrer
+      return FilledButton.icon(
+        onPressed: onStart,
+        icon: const Icon(Icons.fiber_manual_record, size: 16),
+        label: Text(LocaleKeys.transcription_live_start.tr()),
+        style: FilledButton.styleFrom(
+          backgroundColor: colorScheme.primary,
+          foregroundColor: colorScheme.onPrimary,
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
           ),
         ),
-      ),
+      );
+    }
+
+    // En cours ou en pause — Pause/Reprendre + Arrêter
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        // Pause / Reprendre
+        OutlinedButton.icon(
+          onPressed: isPaused ? onResume : onPause,
+          icon: Icon(
+            isPaused ? Icons.play_arrow : Icons.pause,
+            size: 16,
+          ),
+          label: Text(
+            isPaused
+                ? LocaleKeys.transcription_live_resume.tr()
+                : LocaleKeys.transcription_live_pause.tr(),
+          ),
+          style: OutlinedButton.styleFrom(
+            foregroundColor: colorScheme.onSurface,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+        ),
+        const Gap(8),
+        // Arrêter
+        FilledButton.icon(
+          onPressed: onStop,
+          icon: const Icon(Icons.stop, size: 16),
+          label: Text(LocaleKeys.transcription_live_stop.tr()),
+          style: FilledButton.styleFrom(
+            backgroundColor: colorScheme.error,
+            foregroundColor: colorScheme.onError,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

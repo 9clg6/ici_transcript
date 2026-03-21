@@ -50,6 +50,14 @@ abstract class LocaleKeys {
   static const transcription_live_speaker_system =
       'transcription.live.speaker_system';
   static const transcription_live_no_session = 'transcription.live.no_session';
+  static const transcription_live_summary_option =
+      'transcription.live.summary_option';
+  static const transcription_live_summary_title =
+      'transcription.live.summary_title';
+  static const transcription_live_summary_loading =
+      'transcription.live.summary_loading';
+  static const transcription_live_summary_no_key =
+      'transcription.live.summary_no_key';
   static const transcription_status_bar_level =
       'transcription.status_bar.level';
   static const transcription_status_bar_mic = 'transcription.status_bar.mic';
