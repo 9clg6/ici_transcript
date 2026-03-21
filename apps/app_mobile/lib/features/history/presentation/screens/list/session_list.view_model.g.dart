@@ -7,7 +7,7 @@ part of 'session_list.view_model.dart';
 // **************************************************************************
 
 String _$sessionListViewModelHash() =>
-    r'846ef91c29c69e4c34afd931f9fe264621e7ed31';
+    r'd4b55e9c10867e43e8168cf2a4e10fb23687b88d';
 
 /// ViewModel de la liste des sessions (sidebar).
 ///

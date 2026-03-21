@@ -9,6 +9,7 @@ import 'package:core_foundation/logging/logger.dart';
 import 'package:ici_transcript/application/services/live_transcription.service.dart';
 import 'package:ici_transcript/core/providers/services/live_transcription.service.provider.dart';
 import 'package:ici_transcript/core/providers/services/process_manager.service.provider.dart';
+import 'package:ici_transcript/application/services/ollama.service.dart';
 import 'package:ici_transcript/core/providers/services/ollama.service.provider.dart';
 import 'package:ici_transcript/core/providers/services/session_history.service.provider.dart';
 import 'package:ici_transcript/features/settings/presentation/screens/settings/settings.view_model.dart';
@@ -233,14 +234,27 @@ class LiveTranscriptionViewModel extends _$LiveTranscriptionViewModel {
   Future<void> _generateSummary(List<TranscriptSegmentEntity> segments) async {
     state = state.copyWith(isSummaryLoading: true);
 
-    // Démarrer Ollama si nécessaire
+    // S'assurer qu'Ollama est prêt (téléchargement binaire + modèle si besoin)
     try {
-      await ref.read(ollamaServiceProvider).ensureReady();
+      await ref.read(ollamaServiceProvider).ensureReady(
+        onProgress: (OllamaSetupStage stage, double progress) {
+          state = state.copyWith(
+            ollamaSetupStage: stage,
+            ollamaSetupProgress: progress,
+          );
+        },
+      );
+      state = state.copyWith(
+        ollamaSetupStage: OllamaSetupStage.idle,
+        ollamaSetupProgress: 0,
+      );
     } catch (e) {
-      _log.error('Ollama non disponible: $e');
+      _log.error('Ollama setup échoué: $e');
       state = state.copyWith(
         isSummaryLoading: false,
-        summary: 'Ollama introuvable. Installez-le via https://ollama.com puis : ollama pull mistral',
+        ollamaSetupStage: OllamaSetupStage.error,
+        ollamaSetupError: e.toString(),
+        summary: 'Erreur Ollama : $e',
       );
       return;
     }

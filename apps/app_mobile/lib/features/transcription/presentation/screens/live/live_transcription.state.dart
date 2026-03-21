@@ -1,6 +1,7 @@
 import 'package:core_domain/domain/entities/transcript_segment.entity.dart';
 import 'package:core_domain/domain/enum/server_state.enum.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:ici_transcript/application/services/ollama.service.dart';
 
 part 'live_transcription.state.freezed.dart';
 
@@ -43,6 +44,15 @@ abstract class LiveTranscriptionState with _$LiveTranscriptionState {
 
     /// Indique si le résumé est en cours de génération.
     @Default(false) bool isSummaryLoading,
+
+    /// Étape courante du setup Ollama.
+    @Default(OllamaSetupStage.idle) OllamaSetupStage ollamaSetupStage,
+
+    /// Progression du setup Ollama (0.0 – 1.0).
+    @Default(0.0) double ollamaSetupProgress,
+
+    /// Message d'erreur du setup Ollama.
+    String? ollamaSetupError,
   }) = _LiveTranscriptionState;
 
   /// Etat initial par defaut.

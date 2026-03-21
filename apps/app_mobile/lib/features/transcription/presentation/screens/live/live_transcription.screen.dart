@@ -3,6 +3,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
+import 'package:ici_transcript/application/services/ollama.service.dart';
 import 'package:ici_transcript/features/transcription/presentation/screens/live/live_transcription.state.dart';
 import 'package:ici_transcript/features/transcription/presentation/screens/live/live_transcription.view_model.dart';
 import 'package:ici_transcript/features/transcription/presentation/screens/live/widgets/audio_level_indicator.widget.dart';
@@ -114,6 +115,11 @@ class _LiveTranscriptionScreenState
                   .read(liveTranscriptionViewModelProvider.notifier)
                   .recheckPermissions(),
             ),
+          // Ollama setup progress (téléchargement binaire / modèle)
+          if (state.ollamaSetupStage != OllamaSetupStage.idle &&
+              state.ollamaSetupStage != OllamaSetupStage.ready &&
+              state.ollamaSetupStage != OllamaSetupStage.error)
+            _buildOllamaSetupBanner(state, colorScheme, textTheme),
           // Transcript area
           Expanded(child: _buildTranscriptArea(state, colorScheme)),
           // Summary panel (visible après arrêt si résumé activé)
@@ -175,6 +181,65 @@ class _LiveTranscriptionScreenState
             ),
             child: const Text('Re-vérifier'),
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildOllamaSetupBanner(
+    LiveTranscriptionState state,
+    ColorScheme colorScheme,
+    TextTheme textTheme,
+  ) {
+    final String label = switch (state.ollamaSetupStage) {
+      OllamaSetupStage.downloadingBinary =>
+        'Téléchargement du moteur IA (${(state.ollamaSetupProgress * 100).toStringAsFixed(0)} %)...',
+      OllamaSetupStage.startingServer => 'Démarrage du moteur IA...',
+      OllamaSetupStage.downloadingModel =>
+        'Téléchargement du modèle Mistral (${(state.ollamaSetupProgress * 100).toStringAsFixed(0)} %, ~4 Go — une seule fois)...',
+      _ => '',
+    };
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
+      color: colorScheme.secondaryContainer,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Row(
+            children: <Widget>[
+              SizedBox(
+                width: 12,
+                height: 12,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: colorScheme.secondary,
+                ),
+              ),
+              const Gap(8),
+              Expanded(
+                child: Text(
+                  label,
+                  style: textTheme.labelSmall?.copyWith(
+                    color: colorScheme.onSecondaryContainer,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          if (state.ollamaSetupProgress > 0 &&
+              state.ollamaSetupProgress < 1) ...<Widget>[
+            const Gap(6),
+            LinearProgressIndicator(
+              value: state.ollamaSetupProgress,
+              backgroundColor:
+                  colorScheme.secondaryContainer.withValues(alpha: 0.5),
+              color: colorScheme.secondary,
+              minHeight: 3,
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ],
         ],
       ),
     );
