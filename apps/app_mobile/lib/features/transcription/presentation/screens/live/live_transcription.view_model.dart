@@ -9,6 +9,7 @@ import 'package:core_foundation/logging/logger.dart';
 import 'package:ici_transcript/application/services/live_transcription.service.dart';
 import 'package:ici_transcript/core/providers/services/live_transcription.service.provider.dart';
 import 'package:ici_transcript/core/providers/services/process_manager.service.provider.dart';
+import 'package:ici_transcript/core/providers/services/ollama.service.provider.dart';
 import 'package:ici_transcript/core/providers/services/session_history.service.provider.dart';
 import 'package:ici_transcript/features/settings/presentation/screens/settings/settings.view_model.dart';
 import 'package:ici_transcript/features/transcription/presentation/screens/live/live_transcription.state.dart';
@@ -231,6 +232,18 @@ class LiveTranscriptionViewModel extends _$LiveTranscriptionViewModel {
   /// Génère un résumé via Ollama (modèle local Mistral).
   Future<void> _generateSummary(List<TranscriptSegmentEntity> segments) async {
     state = state.copyWith(isSummaryLoading: true);
+
+    // Démarrer Ollama si nécessaire
+    try {
+      await ref.read(ollamaServiceProvider).ensureReady();
+    } catch (e) {
+      _log.error('Ollama non disponible: $e');
+      state = state.copyWith(
+        isSummaryLoading: false,
+        summary: 'Ollama introuvable. Installez-le via https://ollama.com puis : ollama pull mistral',
+      );
+      return;
+    }
 
     try {
       final String transcript = segments
