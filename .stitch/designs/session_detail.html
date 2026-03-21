@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+
+<html class="light" lang="fr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>IciTranscript Menu Bar</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "on-primary-container": "#f0f2ff",
+            "secondary-fixed-dim": "#b9c8da",
+            "outline": "#737687",
+            "surface-container-low": "#f3f3f5",
+            "on-tertiary-container": "#ffefeb",
+            "surface-container-highest": "#e2e2e4",
+            "surface-container-lowest": "#ffffff",
+            "on-tertiary": "#ffffff",
+            "primary-fixed": "#d8e2ff",
+            "inverse-on-surface": "#f0f0f2",
+            "tertiary": "#9d3000",
+            "on-surface": "#1a1c1d",
+            "surface-bright": "#f9f9fb",
+            "tertiary-fixed-dim": "#ffb59d",
+            "secondary-fixed": "#d4e4f6",
+            "error": "#ba1a1a",
+            "tertiary-container": "#c73f00",
+            "surface-container-high": "#e8e8ea",
+            "on-tertiary-fixed-variant": "#832700",
+            "surface-container": "#eeeef0",
+            "on-tertiary-fixed": "#390c00",
+            "primary-fixed-dim": "#adc6ff",
+            "primary": "#0053b1",
+            "on-secondary-container": "#576675",
+            "on-primary-fixed": "#001a41",
+            "surface": "#f9f9fb",
+            "on-secondary-fixed": "#0d1d2a",
+            "primary-container": "#006ae0",
+            "error-container": "#ffdad6",
+            "outline-variant": "#c2c6d9",
+            "tertiary-fixed": "#ffdbd0",
+            "surface-variant": "#e2e2e4",
+            "surface-tint": "#005bc1",
+            "inverse-surface": "#2f3132",
+            "background": "#f9f9fb",
+            "on-primary": "#ffffff",
+            "on-error-container": "#93000a",
+            "secondary-container": "#d4e4f6",
+            "on-error": "#ffffff",
+            "on-secondary": "#ffffff",
+            "on-background": "#1a1c1d",
+            "on-secondary-fixed-variant": "#394857",
+            "surface-dim": "#d9dadc",
+            "on-surface-variant": "#424656",
+            "inverse-primary": "#adc6ff",
+            "secondary": "#51606f",
+            "on-primary-fixed-variant": "#004493"
+          },
+          fontFamily: {
+            "headline": ["Inter"],
+            "body": ["Inter"],
+            "label": ["Inter"]
+          },
+          borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+        },
+      },
+    }
+  </script>
+<style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #1a1c1d; /* Mocking a dark desktop background */
+    }
+    .macos-blur {
+      backdrop-filter: blur(24px) saturate(180%);
+      -webkit-backdrop-filter: blur(24px) saturate(180%);
+    }
+    .transcript-fade {
+      mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
+    }
+  </style>
+</head>
+<body class="flex items-start justify-center p-8 min-h-screen">
+<!-- macOS Menu Bar Popover Container -->
+<div class="w-[280px] macos-blur bg-[#1a1c1d]/85 rounded-xl shadow-[0_20px_40px_rgba(0,0,0,0.4)] border border-white/10 flex flex-col overflow-hidden text-on-primary-container">
+<!-- Top: Status Row -->
+<div class="px-3 py-2.5 flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.6)]"></div>
+<span class="text-[11px] font-medium tracking-tight text-white/90">Voxtral Ready</span>
+</div>
+<!-- Separator (Tonal shift instead of line per DS) -->
+<div class="h-[1px] bg-white/10 mx-3"></div>
+<!-- Button Section -->
+<div class="p-3">
+<button class="w-full h-9 bg-primary-container hover:bg-primary transition-all active:scale-95 flex items-center justify-center rounded-full shadow-lg shadow-primary/20">
+<span class="text-[13px] font-semibold text-white tracking-wide">Demarrer</span>
+</button>
+</div>
+<!-- Separator -->
+<div class="h-[1px] bg-white/10 mx-3"></div>
+<!-- Context & Live Transcript Section -->
+<div class="px-3 py-3 space-y-2">
+<div class="flex flex-col">
+<span class="text-[9px] uppercase tracking-widest text-on-surface-variant/60 font-bold">Session en cours:</span>
+<span class="text-[12px] font-semibold text-white mt-0.5">Reunion produit</span>
+</div>
+<!-- Content: Live Transcript Lines -->
+<div class="transcript-fade h-12 overflow-hidden flex flex-col gap-1">
+<p class="text-[11px] leading-relaxed text-white/60">
+<span class="text-white/40">Speaker 1:</span> Nous devons finaliser l'interface de l'application avant vendredi prochain...
+        </p>
+<p class="text-[11px] leading-relaxed text-white/60">
+<span class="text-white/40">Speaker 2:</span> J'ai déjà commencé les maquettes sur Figma, on est dans les temps.
+        </p>
+</div>
+</div>
+<!-- Separator -->
+<div class="h-[1px] bg-white/10 mx-3"></div>
+<!-- Bottom: Navigation & Settings -->
+<div class="px-3 py-2.5 flex items-center justify-between">
+<a class="text-[11px] font-medium text-white/70 hover:text-white transition-colors" href="#">
+        Ouvrir IciTranscript
+      </a>
+<button class="w-6 h-6 flex items-center justify-center rounded-md hover:bg-white/10 transition-colors group">
+<span class="material-symbols-outlined text-[16px] text-white/50 group-hover:text-white" data-icon="settings">
+          settings
+        </span>
+</button>
+</div>
+</div>
+<!-- Decorative Menu Bar Icon (Contextual Anchor) -->
+<div class="fixed top-0 left-0 right-0 h-8 bg-white/5 backdrop-blur-sm flex items-center justify-end px-4 gap-4 hidden lg:flex">
+<span class="material-symbols-outlined text-white/40 text-[18px]" data-icon="wifi">wifi</span>
+<span class="material-symbols-outlined text-white/40 text-[18px]" data-icon="battery_full">battery_full</span>
+<!-- Active App Icon -->
+<div class="flex items-center gap-1.5 px-2 py-0.5 bg-white/10 rounded cursor-default border border-white/5">
+<span class="material-symbols-outlined text-white text-[16px] scale-x-[-1]" data-icon="graphic_eq">graphic_eq</span>
+<span class="text-[12px] text-white font-medium">IciTranscript</span>
+</div>
+<span class="text-[12px] text-white/80 font-medium">Mar 12 10:45</span>
+</div>
+</body></html>

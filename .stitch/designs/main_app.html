@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+
+<html class="light" lang="fr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>IciTranscript - Pro Audio Editor</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface-dim": "#d9dadc",
+              "primary-container": "#006ae0",
+              "on-background": "#1a1c1d",
+              "on-surface": "#1a1c1d",
+              "on-secondary-container": "#576675",
+              "surface-variant": "#e2e2e4",
+              "on-primary-container": "#f0f2ff",
+              "secondary-fixed-dim": "#b9c8da",
+              "secondary": "#51606f",
+              "surface-container": "#eeeef0",
+              "tertiary-fixed": "#ffdbd0",
+              "surface-container-low": "#f3f3f5",
+              "on-primary-fixed-variant": "#004493",
+              "inverse-on-surface": "#f0f0f2",
+              "inverse-primary": "#adc6ff",
+              "primary-fixed": "#d8e2ff",
+              "secondary-fixed": "#d4e4f6",
+              "outline": "#737687",
+              "on-secondary": "#ffffff",
+              "surface": "#f9f9fb",
+              "tertiary": "#9d3000",
+              "surface-container-high": "#e8e8ea",
+              "outline-variant": "#c2c6d9",
+              "inverse-surface": "#2f3132",
+              "primary-fixed-dim": "#adc6ff",
+              "tertiary-fixed-dim": "#ffb59d",
+              "tertiary-container": "#c73f00",
+              "surface-container-lowest": "#ffffff",
+              "background": "#f9f9fb",
+              "error-container": "#ffdad6",
+              "surface-bright": "#f9f9fb",
+              "on-tertiary-container": "#ffefeb",
+              "on-primary-fixed": "#001a41",
+              "error": "#ba1a1a",
+              "on-surface-variant": "#424656",
+              "on-tertiary-fixed": "#390c00",
+              "on-error-container": "#93000a",
+              "surface-container-highest": "#e2e2e4",
+              "surface-tint": "#005bc1",
+              "on-secondary-fixed-variant": "#394857",
+              "on-tertiary-fixed-variant": "#832700",
+              "on-tertiary": "#ffffff",
+              "secondary-container": "#d4e4f6",
+              "on-primary": "#ffffff",
+              "on-secondary-fixed": "#0d1d2a",
+              "primary": "#0053b1",
+              "on-error": "#ffffff"
+            },
+            fontFamily: {
+              "headline": ["Inter"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .mac-shadow { box-shadow: 0 20px 40px rgba(26, 28, 29, 0.08); }
+        .glass-panel { backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
+        .cursor-blink { animation: blink 1s infinite steps(1); }
+        @keyframes blink { 50% { opacity: 0; } }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #c2c6d9; border-radius: 10px; border: 2px solid #f9f9fb; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body antialiased h-screen overflow-hidden flex">
+<!-- Sidebar / Rail (JSON: SideNavBar) -->
+<aside class="fixed inset-y-0 left-0 flex flex-col p-4 h-full w-64 bg-slate-50/70 dark:bg-slate-900/70 backdrop-blur-xl font-['Inter'] antialiased text-sm tracking-tight z-20">
+<!-- Window Chrome Buttons -->
+<div class="flex gap-2 mb-8 px-2">
+<div class="w-3 h-3 rounded-full bg-[#FF5F57]"></div>
+<div class="w-3 h-3 rounded-full bg-[#FEBC2E]"></div>
+<div class="w-3 h-3 rounded-full bg-[#28C840]"></div>
+</div>
+<div class="mb-6 px-2">
+<h1 class="text-lg font-bold text-slate-900 dark:text-slate-50">IciTranscript</h1>
+<p class="text-[11px] uppercase tracking-widest text-on-surface-variant font-semibold opacity-60">Pro Audio Editor</p>
+</div>
+<!-- Search Input -->
+<div class="relative mb-6 px-2">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm" data-icon="search">search</span>
+<input class="w-full pl-9 pr-4 py-2 bg-surface-container-highest/50 border-none rounded-lg text-xs focus:ring-1 focus:ring-primary/30" placeholder="Rechercher..." type="text"/>
+</div>
+<!-- Navigation Groups -->
+<nav class="flex-1 space-y-6 overflow-y-auto px-2">
+<div>
+<h2 class="text-[10px] font-bold text-on-surface-variant/70 uppercase tracking-widest px-2 mb-2">Aujourd'hui</h2>
+<div class="space-y-1">
+<button class="w-full text-left px-3 py-2.5 bg-white/80 dark:bg-slate-800/80 text-indigo-600 dark:text-indigo-400 font-semibold shadow-sm rounded-lg flex items-center gap-3 Active: scale-[0.98] transition-transform">
+<span class="material-symbols-outlined text-[18px]" data-icon="graphic_eq">graphic_eq</span>
+<span>Reunion produit</span>
+</button>
+<button class="w-full text-left px-3 py-2.5 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-white/50 dark:hover:bg-slate-800/50 transition-colors duration-200 rounded-lg flex items-center gap-3">
+<span class="material-symbols-outlined text-[18px]" data-icon="mic_none">mic_none</span>
+<span>Call technique</span>
+</button>
+</div>
+</div>
+<div>
+<h2 class="text-[10px] font-bold text-on-surface-variant/70 uppercase tracking-widest px-2 mb-2">Hier</h2>
+<div class="space-y-1">
+<button class="w-full text-left px-3 py-2.5 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-white/50 dark:hover:bg-slate-800/50 transition-colors duration-200 rounded-lg flex items-center gap-3">
+<span class="material-symbols-outlined text-[18px]" data-icon="folder_open">folder_open</span>
+<span>Entretien RH</span>
+</button>
+<button class="w-full text-left px-3 py-2.5 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-white/50 dark:hover:bg-slate-800/50 transition-colors duration-200 rounded-lg flex items-center gap-3">
+<span class="material-symbols-outlined text-[18px]" data-icon="folder_open">folder_open</span>
+<span>Point hebdo</span>
+</button>
+</div>
+</div>
+</nav>
+<!-- Bottom Sidebar Actions -->
+<div class="pt-4 mt-auto border-t border-slate-200/30 dark:border-slate-800/30">
+<button class="w-full flex items-center gap-3 px-3 py-2.5 text-slate-500 hover:text-slate-900 rounded-lg transition-colors">
+<span class="material-symbols-outlined text-[20px]" data-icon="settings">settings</span>
+<span class="text-sm font-medium">Paramètres</span>
+</button>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="ml-64 flex-1 flex flex-col min-w-0 bg-surface">
+<!-- Top Navigation Bar (JSON: TopNavBar) -->
+<header class="flex items-center justify-between px-6 w-full h-14 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md border-b border-slate-200/30 dark:border-slate-800/30 shadow-sm dark:shadow-none font-['Inter'] text-[13px] font-medium z-10">
+<div class="flex items-center gap-6">
+<!-- Status Indicator -->
+<div class="flex items-center gap-2 px-3 py-1 bg-green-50 text-green-700 rounded-full border border-green-100">
+<span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+<span class="text-[11px] font-bold">Voxtral Ready</span>
+</div>
+<!-- Menu Links (Simulation) -->
+<div class="hidden lg:flex items-center gap-4 text-on-surface-variant">
+<span class="hover:bg-slate-100 dark:hover:bg-slate-800 px-2 py-1 rounded-md cursor-pointer transition-colors">File</span>
+<span class="hover:bg-slate-100 dark:hover:bg-slate-800 px-2 py-1 rounded-md cursor-pointer transition-colors">Edit</span>
+<span class="hover:bg-slate-100 dark:hover:bg-slate-800 px-2 py-1 rounded-md cursor-pointer transition-colors">View</span>
+</div>
+</div>
+<!-- Timer Area -->
+<div class="absolute left-1/2 -translate-x-1/2 flex flex-col items-center">
+<span class="text-xl font-mono font-bold tracking-tight text-on-surface">00:12:34</span>
+<span class="text-[9px] uppercase tracking-widest text-on-surface-variant font-bold leading-none">Recording Time</span>
+</div>
+<!-- Transport Controls (Segmented Control style) -->
+<div class="flex items-center gap-1 bg-surface-container-high p-1 rounded-xl">
+<button class="p-2 hover:bg-surface-container-highest rounded-lg text-on-surface-variant transition-colors flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]" data-icon="play_circle">play_circle</span>
+</button>
+<button class="p-2 bg-indigo-600 text-white rounded-lg shadow-md flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]" data-icon="pause_circle" data-weight="fill" style="font-variation-settings: 'FILL' 1;">pause_circle</span>
+</button>
+<button class="p-2 hover:bg-red-50 text-error rounded-lg transition-colors flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]" data-icon="stop_circle">stop_circle</span>
+</button>
+<div class="w-px h-4 bg-outline-variant/30 mx-1"></div>
+<button class="px-3 py-1.5 text-[12px] font-bold text-primary hover:bg-primary/5 rounded-lg transition-colors">
+                    Export
+                </button>
+</div>
+</header>
+<!-- Editor Content -->
+<div class="flex-1 overflow-y-auto px-12 py-10 max-w-5xl mx-auto w-full space-y-10">
+<!-- Transcription Segment 1 -->
+<div class="group relative">
+<div class="flex items-center gap-4 mb-3">
+<span class="px-2 py-0.5 bg-indigo-100 text-indigo-700 text-[10px] font-bold rounded uppercase tracking-wider">MOI</span>
+<span class="text-[11px] text-on-surface-variant font-medium">10:02:15</span>
+</div>
+<div class="p-5 bg-surface-container-lowest rounded-xl border border-outline-variant/10 shadow-sm transition-all hover:shadow-md">
+<p class="text-[15px] leading-relaxed text-on-surface">Bonjour à tous, on démarre ce point produit. L'idée aujourd'hui est de revoir l'interface du moteur de transcription en temps réel pour l'application IciTranscript.</p>
+</div>
+</div>
+<!-- Transcription Segment 2 -->
+<div class="group relative">
+<div class="flex items-center gap-4 mb-3">
+<span class="px-2 py-0.5 bg-teal-100 text-teal-700 text-[10px] font-bold rounded uppercase tracking-wider">SYSTEME</span>
+<span class="text-[11px] text-on-surface-variant font-medium">10:02:48</span>
+</div>
+<div class="p-5 border-l-2 border-teal-500/20">
+<p class="text-[15px] leading-relaxed text-on-surface-variant italic">Flux audio entrant détecté via ScreenCaptureKit. Buffer synchronisé à 44.1kHz. Analyse spectrale en cours...</p>
+</div>
+</div>
+<!-- Transcription Segment 3 -->
+<div class="group relative">
+<div class="flex items-center gap-4 mb-3">
+<span class="px-2 py-0.5 bg-indigo-100 text-indigo-700 text-[10px] font-bold rounded uppercase tracking-wider">MOI</span>
+<span class="text-[11px] text-on-surface-variant font-medium">10:03:02</span>
+</div>
+<div class="p-5 bg-surface-container-lowest rounded-xl border border-outline-variant/10 shadow-sm transition-all hover:shadow-md">
+<p class="text-[15px] leading-relaxed text-on-surface">Parfait. On va avoir besoin d'une latence extrêmement faible, idéalement sous les 200ms pour que l'utilisateur puisse éditer le texte pendant qu'il est généré.</p>
+</div>
+</div>
+<!-- Real-time Active Transcription -->
+<div class="relative pb-20">
+<div class="flex items-center gap-4 mb-3">
+<span class="px-2 py-0.5 bg-indigo-100 text-indigo-700 text-[10px] font-bold rounded uppercase tracking-wider">MOI</span>
+<span class="text-[11px] text-on-surface-variant font-medium">10:12:34</span>
+</div>
+<div class="p-5 bg-primary/5 rounded-xl border border-primary/20">
+<p class="text-[15px] leading-relaxed text-on-surface">
+                        Est-ce qu'on peut également intégrer une détection automatique des silences pour segmenter les paragraphes ?
+                        <span class="inline-block w-[2px] h-[18px] bg-indigo-600 ml-1 cursor-blink align-middle"></span>
+</p>
+</div>
+</div>
+</div>
+<!-- Status Bar -->
+<footer class="h-10 bg-surface-container-low px-6 flex items-center justify-between border-t border-outline-variant/20">
+<div class="flex items-center gap-6">
+<!-- Audio Visualizer Mock -->
+<div class="flex items-center gap-2">
+<span class="text-[10px] font-bold text-on-surface-variant uppercase tracking-tighter">Level</span>
+<div class="flex gap-0.5 h-3 items-end">
+<div class="w-1 bg-green-400 h-[20%] rounded-full"></div>
+<div class="w-1 bg-green-400 h-[50%] rounded-full"></div>
+<div class="w-1 bg-green-400 h-[80%] rounded-full"></div>
+<div class="w-1 bg-green-400 h-[60%] rounded-full"></div>
+<div class="w-1 bg-green-400 h-[30%] rounded-full"></div>
+<div class="w-1 bg-green-400 h-[45%] rounded-full"></div>
+<div class="w-1 bg-green-200 h-[10%] rounded-full"></div>
+</div>
+</div>
+<div class="flex items-center gap-1 text-[11px] text-on-surface-variant font-medium">
+<span class="material-symbols-outlined text-[14px]" data-icon="mic">mic</span>
+<span>Micro: MacBook Pro</span>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-1 text-[11px] text-on-surface-variant font-medium">
+<span class="material-symbols-outlined text-[14px]" data-icon="screenshot">screenshot</span>
+<span>Systeme: ScreenCaptureKit</span>
+</div>
+<div class="w-px h-3 bg-outline-variant/40"></div>
+<span class="text-[11px] font-bold text-on-surface-variant/60 uppercase tracking-widest">UTF-8 / AI-X1</span>
+</div>
+</footer>
+</main>
+<!-- App Overlay Icons (Pro Mode) -->
+<div class="fixed bottom-14 right-8 flex flex-col gap-3">
+<button class="w-12 h-12 bg-white text-on-surface rounded-full shadow-lg border border-outline-variant/10 flex items-center justify-center hover:scale-105 transition-transform">
+<span class="material-symbols-outlined" data-icon="auto_awesome">auto_awesome</span>
+</button>
+</div>
+</body></html>

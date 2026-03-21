@@ -1,0 +1,12 @@
+name: ici_transcript_workspace
+publish_to: "none"
+
+environment:
+  sdk: ^3.10.3
+
+workspace:
+  - apps/app_macos
+  - packages/core_foundation
+  - packages/core_domain
+  - packages/core_data
+  - packages/core_presentation

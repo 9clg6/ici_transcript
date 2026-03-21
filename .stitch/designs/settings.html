@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+
+<html class="light" lang="fr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+        .mac-traffic-light {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        .mac-switch {
+            width: 32px;
+            height: 18px;
+            transition: background-color 0.2s;
+        }
+        .mac-switch-dot {
+            width: 14px;
+            height: 14px;
+            transition: transform 0.2s;
+        }
+        /* Custom scrollbar to mimic macOS */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #d1d1d6;
+            border-radius: 10px;
+            border: 2px solid transparent;
+            background-clip: content-box;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+            font-size: 18px;
+        }
+    </style>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "error-container": "#ffdad6",
+              "inverse-surface": "#2f3132",
+              "secondary-container": "#d4e4f6",
+              "on-tertiary-container": "#ffefeb",
+              "on-background": "#1a1c1d",
+              "on-error-container": "#93000a",
+              "surface-container-high": "#e8e8ea",
+              "on-tertiary-fixed": "#390c00",
+              "surface-container-low": "#f3f3f5",
+              "surface-bright": "#f9f9fb",
+              "surface-tint": "#005bc1",
+              "on-secondary-container": "#576675",
+              "on-primary-container": "#f0f2ff",
+              "on-primary-fixed-variant": "#004493",
+              "tertiary-fixed-dim": "#ffb59d",
+              "tertiary-fixed": "#ffdbd0",
+              "on-secondary": "#ffffff",
+              "primary": "#0053b1",
+              "surface-dim": "#d9dadc",
+              "surface-container": "#eeeef0",
+              "secondary-fixed-dim": "#b9c8da",
+              "surface-variant": "#e2e2e4",
+              "on-primary": "#ffffff",
+              "error": "#ba1a1a",
+              "surface-container-highest": "#e2e2e4",
+              "outline-variant": "#c2c6d9",
+              "inverse-primary": "#adc6ff",
+              "primary-container": "#006ae0",
+              "on-surface-variant": "#424656",
+              "tertiary-container": "#c73f00",
+              "inverse-on-surface": "#f0f0f2",
+              "background": "#f9f9fb",
+              "secondary": "#51606f",
+              "on-tertiary-fixed-variant": "#832700",
+              "tertiary": "#9d3000",
+              "surface": "#f9f9fb",
+              "surface-container-lowest": "#ffffff",
+              "primary-fixed": "#d8e2ff",
+              "outline": "#737687",
+              "primary-fixed-dim": "#adc6ff",
+              "on-primary-fixed": "#001a41",
+              "on-secondary-fixed": "#0d1d2a",
+              "on-secondary-fixed-variant": "#394857",
+              "on-tertiary": "#ffffff",
+              "on-surface": "#1a1c1d",
+              "on-error": "#ffffff",
+              "secondary-fixed": "#d4e4f6"
+            },
+            fontFamily: {
+              "headline": ["Inter"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+</head>
+<body class="bg-surface flex items-center justify-center min-h-screen p-8">
+<!-- macOS Window Container -->
+<div class="w-[580px] h-[680px] bg-surface-container-low rounded-xl shadow-2xl overflow-hidden flex flex-row border border-white/20 ring-1 ring-black/5">
+<!-- Sidebar Shell (Shared Component SideNavBar mapping) -->
+<aside class="w-52 h-full bg-slate-50/70 dark:bg-slate-900/70 backdrop-blur-xl flex flex-col p-4 space-y-1">
+<!-- Traffic Lights -->
+<div class="flex space-x-2 mb-6 px-1">
+<div class="mac-traffic-light bg-[#FF5F57]"></div>
+<div class="mac-traffic-light bg-[#FEBC2E]"></div>
+<div class="mac-traffic-light bg-[#28C840]"></div>
+</div>
+<div class="mb-4 px-2">
+<h1 class="text-lg font-bold text-slate-900 dark:text-slate-100">IciTranscript</h1>
+<p class="text-xs text-on-surface-variant/70">Réglages</p>
+</div>
+<!-- SideNavBar Tabs -->
+<nav class="space-y-0.5">
+<a class="flex items-center space-x-2 px-3 py-1.5 bg-indigo-600/10 text-indigo-600 dark:bg-indigo-500/20 dark:text-indigo-400 rounded-lg font-sans text-sm tracking-tight transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">volume_up</span>
+<span>Audio</span>
+</a>
+<a class="flex items-center space-x-2 px-3 py-1.5 text-slate-600 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 rounded-lg font-sans text-sm tracking-tight transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">memory</span>
+<span>ML Server</span>
+</a>
+<a class="flex items-center space-x-2 px-3 py-1.5 text-slate-600 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 rounded-lg font-sans text-sm tracking-tight transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">keyboard_command_key</span>
+<span>Shortcuts</span>
+</a>
+<a class="flex items-center space-x-2 px-3 py-1.5 text-slate-600 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 rounded-lg font-sans text-sm tracking-tight transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">database</span>
+<span>Storage</span>
+</a>
+</nav>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 bg-surface-container-lowest flex flex-col overflow-y-auto">
+<!-- TopNavBar Shell (Partial Mapping) -->
+<header class="flex justify-between items-center px-6 h-12 w-full sticky top-0 bg-white/80 backdrop-blur-md z-10 border-b border-slate-200/30">
+<span class="text-sm font-semibold text-slate-900">Audio</span>
+<div class="flex items-center space-x-4">
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-indigo-500 transition-colors">close</span>
+</div>
+</header>
+<div class="p-6 space-y-8">
+<!-- Section 1: Audio -->
+<section>
+<h3 class="text-[11px] font-bold text-on-surface-variant/60 uppercase tracking-wider mb-3 px-1">Audio</h3>
+<div class="bg-surface-container rounded-xl overflow-hidden shadow-sm ring-1 ring-black/5">
+<!-- Microphone Row -->
+<div class="flex items-center justify-between px-4 py-3 bg-surface-container-lowest">
+<span class="text-sm font-medium text-on-surface">Microphone</span>
+<button class="flex items-center space-x-1 text-sm text-on-surface-variant bg-surface-container-low px-2 py-1 rounded-md border border-outline-variant/20">
+<span>MacBook Pro Microphone</span>
+<span class="material-symbols-outlined text-[16px]">unfold_more</span>
+</button>
+</div>
+<div class="h-[1px] bg-outline-variant/10"></div>
+<!-- Audio System Row -->
+<div class="flex flex-col px-4 py-3 bg-surface-container-lowest">
+<div class="flex items-center justify-between">
+<span class="text-sm font-medium text-on-surface">Audio systeme</span>
+<div class="mac-switch bg-[#4F46E5] rounded-full relative cursor-pointer flex items-center px-0.5">
+<div class="mac-switch-dot bg-white rounded-full translate-x-[14px] shadow-sm"></div>
+</div>
+</div>
+<span class="text-[11px] text-on-surface-variant mt-0.5">Capture via ScreenCaptureKit</span>
+</div>
+<div class="h-[1px] bg-outline-variant/10"></div>
+<!-- Indicateur Row -->
+<div class="flex items-center justify-between px-4 py-3 bg-surface-container-lowest">
+<span class="text-sm font-medium text-on-surface">Indicateur de niveau</span>
+<div class="mac-switch bg-[#4F46E5] rounded-full relative cursor-pointer flex items-center px-0.5">
+<div class="mac-switch-dot bg-white rounded-full translate-x-[14px] shadow-sm"></div>
+</div>
+</div>
+</div>
+</section>
+<!-- Section 2: ML Server -->
+<section>
+<h3 class="text-[11px] font-bold text-on-surface-variant/60 uppercase tracking-wider mb-3 px-1">Serveur ML</h3>
+<div class="bg-surface-container rounded-xl overflow-hidden shadow-sm ring-1 ring-black/5">
+<!-- Modele Row -->
+<div class="flex items-center justify-between px-4 py-3 bg-surface-container-lowest">
+<span class="text-sm font-medium text-on-surface">Modele</span>
+<button class="flex items-center space-x-1 text-sm text-on-surface-variant bg-surface-container-low px-2 py-1 rounded-md border border-outline-variant/20">
+<span>Voxtral-Mini-4B-Realtime</span>
+<span class="material-symbols-outlined text-[16px]">unfold_more</span>
+</button>
+</div>
+<div class="h-[1px] bg-outline-variant/10"></div>
+<!-- Port Row -->
+<div class="flex items-center justify-between px-4 py-3 bg-surface-container-lowest">
+<span class="text-sm font-medium text-on-surface">Port</span>
+<input class="w-16 text-right text-sm text-on-surface bg-surface-container-low border-none focus:ring-1 focus:ring-indigo-500 rounded px-2 py-0.5" type="text" value="8765"/>
+</div>
+<div class="h-[1px] bg-outline-variant/10"></div>
+<!-- Lancement Automatique -->
+<div class="flex items-center justify-between px-4 py-3 bg-surface-container-lowest">
+<span class="text-sm font-medium text-on-surface">Lancement automatique</span>
+<div class="mac-switch bg-[#4F46E5] rounded-full relative cursor-pointer flex items-center px-0.5">
+<div class="mac-switch-dot bg-white rounded-full translate-x-[14px] shadow-sm"></div>
+</div>
+</div>
+</div>
+</section>
+<!-- Section 3: Shortcuts -->
+<section>
+<h3 class="text-[11px] font-bold text-on-surface-variant/60 uppercase tracking-wider mb-3 px-1">Raccourcis</h3>
+<div class="bg-surface-container rounded-xl overflow-hidden shadow-sm ring-1 ring-black/5">
+<div class="flex items-center justify-between px-4 py-3 bg-surface-container-lowest">
+<span class="text-sm font-medium text-on-surface">Demarrer/Arreter</span>
+<div class="bg-surface-container-high px-2 py-0.5 rounded text-[11px] font-medium text-on-surface-variant border border-outline-variant/30 flex items-center space-x-1">
+<span>⌘</span><span>⇧</span><span>T</span>
+</div>
+</div>
+<div class="h-[1px] bg-outline-variant/10"></div>
+<div class="flex items-center justify-between px-4 py-3 bg-surface-container-lowest">
+<span class="text-sm font-medium text-on-surface">Pause</span>
+<div class="bg-surface-container-high px-2 py-0.5 rounded text-[11px] font-medium text-on-surface-variant border border-outline-variant/30 flex items-center space-x-1">
+<span>⌘</span><span>⇧</span><span>P</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Section 4: Storage -->
+<section>
+<h3 class="text-[11px] font-bold text-on-surface-variant/60 uppercase tracking-wider mb-3 px-1">Stockage</h3>
+<div class="bg-surface-container rounded-xl overflow-hidden shadow-sm ring-1 ring-black/5">
+<div class="flex flex-col px-4 py-3 bg-surface-container-lowest space-y-2">
+<div class="flex items-center justify-between">
+<span class="text-sm font-medium text-on-surface">Emplacement</span>
+<button class="text-xs font-medium text-indigo-600 hover:text-indigo-700 bg-indigo-50 px-2.5 py-1 rounded-md">Modifier...</button>
+</div>
+<span class="text-[10px] text-on-surface-variant break-all font-mono bg-surface-container-low p-2 rounded">/Users/clement/Library/Application Support/IciTranscript</span>
+</div>
+<div class="h-[1px] bg-outline-variant/10"></div>
+<div class="flex items-center justify-between px-4 py-3 bg-surface-container-lowest">
+<span class="text-sm font-medium text-on-surface">Taille base de donnees</span>
+<span class="text-sm text-on-surface-variant">124 Mo</span>
+</div>
+</div>
+</section>
+<!-- Footer -->
+<footer class="pt-4 pb-8 flex flex-col items-center justify-center space-y-1">
+<a class="text-xs font-medium text-indigo-600 hover:underline" href="#">A propos</a>
+<span class="text-[10px] text-on-surface-variant/50">v0.1.0</span>
+</footer>
+</div>
+</main>
+</div>
+</body></html>

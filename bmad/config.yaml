@@ -1,0 +1,45 @@
+# BMAD Project Configuration
+# Generated: 2026-03-19
+
+project:
+  name: IciTranscript
+  type: desktop-app
+  level: 2
+  description: >
+    Application macOS de transcription vocale en temps reel, utilisant le modele
+    Voxtral-Mini-4B-Realtime (Mistral) en local via MLX. Capture simultanee de
+    l'entree audio (micro) et de la sortie audio (systeme via BlackHole) pour
+    transcrire en direct avec affichage sous-titres. Inclut un systeme de resume
+    automatique des transcriptions via un modele local. Souverainete et securite
+    des donnees garanties (tout tourne en local, aucune donnee envoyee a l'exterieur).
+
+  tech_stack:
+    - Flutter (macOS desktop)
+    - Dart
+    - Voxtral-Mini-4B-Realtime-2602-MLX-4bit (via voxmlx-serve)
+    - BlackHole (audio routing)
+    - MLX (Apple Silicon inference)
+    - Riverpod 3.0 (state management)
+    - Freezed (immutable models)
+    - AutoRoute (navigation)
+
+  key_constraints:
+    - Tout doit tourner en local (aucun cloud)
+    - Compatible macOS (Apple Silicon prioritaire)
+    - Transcription temps reel (streaming audio)
+    - Capture simultanee input + output audio
+    - Securite et souverainete des donnees
+
+phases:
+  analysis:
+    status: not-started
+    required: true
+  planning:
+    status: not-started
+    required: true
+  solutioning:
+    status: not-started
+    required: true
+  implementation:
+    status: not-started
+    required: true

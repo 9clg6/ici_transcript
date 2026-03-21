@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  analyze-and-test:
+    name: Analyze & Test
+    runs-on: macos-14
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.38.4"
+          channel: stable
+          cache: true
+
+      - name: Install root workspace dependencies
+        run: flutter pub get
+
+      - name: Analyze app
+        run: flutter analyze
+        working-directory: apps/app_macos
+
+      - name: Test app
+        run: flutter test
+        working-directory: apps/app_macos
+
+      - name: Test core_domain
+        run: flutter test
+        working-directory: packages/core_domain
+
+      - name: Test core_data
+        run: flutter test
+        working-directory: packages/core_data
