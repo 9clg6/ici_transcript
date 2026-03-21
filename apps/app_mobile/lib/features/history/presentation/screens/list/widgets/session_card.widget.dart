@@ -8,12 +8,14 @@ import 'package:ici_transcript/features/shared/presentation/widgets/status_dot.w
 ///
 /// Affiche le titre, l'heure, un badge de duree et un indicateur
 /// de statut colore (vert = active, gris = terminee).
-class SessionCardWidget extends StatelessWidget {
+/// Au survol, un bouton de suppression apparait.
+class SessionCardWidget extends StatefulWidget {
   /// Cree une instance de [SessionCardWidget].
   const SessionCardWidget({
     required this.session,
     required this.isSelected,
     required this.onTap,
+    required this.onDelete,
     super.key,
   });
 
@@ -26,6 +28,16 @@ class SessionCardWidget extends StatelessWidget {
   /// Callback lorsque l'utilisateur tape sur la carte.
   final VoidCallback onTap;
 
+  /// Callback lorsque l'utilisateur supprime la session.
+  final VoidCallback onDelete;
+
+  @override
+  State<SessionCardWidget> createState() => _SessionCardWidgetState();
+}
+
+class _SessionCardWidgetState extends State<SessionCardWidget> {
+  bool _isHovered = false;
+
   String _formatDuration(int? durationSeconds) {
     if (durationSeconds == null) return '';
     final int minutes = durationSeconds ~/ 60;
@@ -37,60 +49,73 @@ class SessionCardWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final ColorScheme colorScheme = Theme.of(context).colorScheme;
 
-    final Color statusColor = session.status == SessionStatus.active
+    final Color statusColor = widget.session.status == SessionStatus.active
         ? Colors.green
         : Colors.grey;
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 2),
-      child: Material(
-        color: isSelected
-            ? colorScheme.surface.withValues(alpha: 0.8)
-            : Colors.transparent,
-        borderRadius: BorderRadius.circular(8),
-        child: InkWell(
-          onTap: onTap,
+      child: MouseRegion(
+        onEnter: (_) => setState(() => _isHovered = true),
+        onExit: (_) => setState(() => _isHovered = false),
+        child: Material(
+          color: widget.isSelected
+              ? colorScheme.surface.withValues(alpha: 0.8)
+              : Colors.transparent,
           borderRadius: BorderRadius.circular(8),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-            child: Row(
-              children: <Widget>[
-                StatusDotWidget(color: statusColor),
-                const Gap(12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(
-                        session.title,
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: isSelected
-                              ? colorScheme.primary
-                              : colorScheme.onSurfaceVariant,
-                          fontWeight: isSelected
-                              ? FontWeight.w600
-                              : FontWeight.normal,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      if (session.durationSeconds != null) ...<Widget>[
-                        const Gap(2),
+          child: InkWell(
+            onTap: widget.onTap,
+            borderRadius: BorderRadius.circular(8),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              child: Row(
+                children: <Widget>[
+                  StatusDotWidget(color: statusColor),
+                  const Gap(12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
                         Text(
-                          _formatDuration(session.durationSeconds),
-                          style: Theme.of(context).textTheme.labelSmall
+                          widget.session.title,
+                          style: Theme.of(context).textTheme.bodyMedium
                               ?.copyWith(
-                                color: colorScheme.onSurfaceVariant.withValues(
-                                  alpha: 0.6,
-                                ),
-                                fontSize: 10,
+                                color: widget.isSelected
+                                    ? colorScheme.primary
+                                    : colorScheme.onSurfaceVariant,
+                                fontWeight: widget.isSelected
+                                    ? FontWeight.w600
+                                    : FontWeight.normal,
                               ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
+                        if (widget.session.durationSeconds != null) ...<Widget>[
+                          const Gap(2),
+                          Text(
+                            _formatDuration(widget.session.durationSeconds),
+                            style: Theme.of(context).textTheme.labelSmall
+                                ?.copyWith(
+                                  color: colorScheme.onSurfaceVariant
+                                      .withValues(alpha: 0.6),
+                                  fontSize: 10,
+                                ),
+                          ),
+                        ],
                       ],
-                    ],
+                    ),
                   ),
-                ),
-              ],
+                  if (_isHovered)
+                    GestureDetector(
+                      onTap: widget.onDelete,
+                      child: Icon(
+                        Icons.delete_outline,
+                        size: 16,
+                        color: colorScheme.error.withValues(alpha: 0.7),
+                      ),
+                    ),
+                ],
+              ),
             ),
           ),
         ),

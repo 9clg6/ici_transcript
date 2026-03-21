@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ici_transcript/core/providers/kernel.provider.dart';
 import 'package:ici_transcript/core/providers/platform/uvx_available.provider.dart';
+import 'package:ici_transcript/features/onboarding/presentation/ollama_setup.view_model.dart';
+import 'package:ici_transcript/features/onboarding/presentation/ollama_setup.screen.dart';
 import 'package:ici_transcript/features/shared/presentation/screens/onboarding/uv_onboarding.screen.dart';
 import 'package:ici_transcript/foundation/routing/app_router.dart';
 
@@ -70,6 +72,32 @@ class _RootAppWidgetState extends ConsumerState<RootAppWidget> {
             ),
           );
         }
+
+        // Afficher l'écran de configuration Ollama si pas encore prêt
+        final bool ollamaReady =
+            ref.watch(ollamaSetupViewModelProvider).isReady;
+        if (!ollamaReady) {
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            theme: ThemeData(
+              colorScheme: ColorScheme.fromSeed(
+                seedColor: Colors.indigo,
+                brightness: Brightness.light,
+              ),
+              useMaterial3: true,
+            ),
+            darkTheme: ThemeData(
+              colorScheme: ColorScheme.fromSeed(
+                seedColor: Colors.indigo,
+                brightness: Brightness.dark,
+              ),
+              useMaterial3: true,
+            ),
+            themeMode: ThemeMode.system,
+            home: const OllamaSetupScreen(),
+          );
+        }
+
         return MaterialApp.router(
           debugShowCheckedModeBanner: false,
           title: 'IciTranscript',

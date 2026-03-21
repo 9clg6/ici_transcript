@@ -17,6 +17,9 @@ abstract class SessionDetailState with _$SessionDetailState {
 
     /// Indique si le titre est en cours d'edition.
     @Default(false) bool isEditing,
+
+    /// Résumé IA de la session, null si absent.
+    String? summary,
   }) = _SessionDetailState;
 
   /// Etat initial par defaut.

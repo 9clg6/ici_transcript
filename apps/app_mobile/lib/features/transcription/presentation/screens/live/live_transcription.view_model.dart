@@ -12,6 +12,7 @@ import 'package:ici_transcript/core/providers/services/process_manager.service.p
 import 'package:ici_transcript/application/services/ollama.service.dart';
 import 'package:ici_transcript/core/providers/services/ollama.service.provider.dart';
 import 'package:ici_transcript/core/providers/services/session_history.service.provider.dart';
+import 'package:ici_transcript/core/providers/services/summary.service.provider.dart';
 import 'package:ici_transcript/features/settings/presentation/screens/settings/settings.view_model.dart';
 import 'package:ici_transcript/features/transcription/presentation/screens/live/live_transcription.state.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -124,6 +125,11 @@ class LiveTranscriptionViewModel extends _$LiveTranscriptionViewModel {
   Future<void> stopSession() async {
     _durationTimer?.cancel();
     _durationTimer = null;
+
+    // Capturer l'ID de session avant d'arrêter
+    final String? sessionId =
+        _liveService?.currentSessionStream.value?.id;
+
     await _liveService?.stopTranscription();
 
     final List<TranscriptSegmentEntity> segments = state.segments;
@@ -143,7 +149,7 @@ class LiveTranscriptionViewModel extends _$LiveTranscriptionViewModel {
 
     // Générer le résumé si l'option est activée
     if (state.isSummaryEnabled && segments.isNotEmpty) {
-      await _generateSummary(segments);
+      await _generateSummary(segments, sessionId: sessionId);
     }
   }
 
@@ -236,8 +242,11 @@ class LiveTranscriptionViewModel extends _$LiveTranscriptionViewModel {
     }
   }
 
-  /// Génère un résumé via Ollama (modèle local Mistral).
-  Future<void> _generateSummary(List<TranscriptSegmentEntity> segments) async {
+  /// Génère un résumé via Ollama (modèle local Mistral) et le sauvegarde.
+  Future<void> _generateSummary(
+    List<TranscriptSegmentEntity> segments, {
+    String? sessionId,
+  }) async {
     state = state.copyWith(isSummaryLoading: true);
 
     // S'assurer qu'Ollama est prêt (téléchargement binaire + modèle si besoin)
@@ -301,6 +310,15 @@ class LiveTranscriptionViewModel extends _$LiveTranscriptionViewModel {
 
       state = state.copyWith(isSummaryLoading: false, summary: summary);
       _log.info('Résumé généré via Ollama');
+
+      // Sauvegarder le résumé en base de données
+      if (sessionId != null && summary.isNotEmpty) {
+        await ref.read(summaryServiceProvider).saveSummary(
+          sessionId: sessionId,
+          content: summary,
+        );
+        _log.info('Résumé sauvegardé pour session $sessionId');
+      }
     } catch (e) {
       _log.error('Erreur génération résumé Ollama: $e');
       state = state.copyWith(

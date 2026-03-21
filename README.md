@@ -13,9 +13,11 @@ IciTranscript captures your microphone and system audio simultaneously, transcri
 
 - **Real-time transcription** — see your words appear as you speak, powered by [voxmlx](https://github.com/T0mSIlver/voxmlx) and Apple Silicon MLX
 - **Dual audio capture** — microphone + system audio (meetings, videos, calls) captured and mixed simultaneously
-- **Session history** — every transcription is automatically saved and instantly visible in the sidebar
-- **AI summaries** — get a concise summary of any session using a local [Mistral](https://mistral.ai) model — Ollama and the model are downloaded automatically on first use, no setup required
-- **Export** — copy transcript to clipboard or export as Markdown / plain text
+- **Session history** — every transcription is automatically saved and instantly visible in the sidebar; click any session to review it
+- **AI summaries** — get a concise summary of any session using a local [Mistral](https://mistral.ai) model; summaries are saved and viewable directly in the session detail panel
+- **Zero setup for AI** — Ollama runtime (~106 MB) and the Mistral model (~4 GB) are downloaded automatically on first launch, with a detailed progress screen; no manual steps required
+- **Export** — copy transcript to clipboard or export as Markdown to `~/Downloads/`
+- **Delete on hover** — remove any session directly from the sidebar with a single click
 - **100% local & private** — your audio never leaves your Mac; no accounts, no subscriptions, no telemetry
 - **Keyboard shortcuts** — start/stop recording from anywhere on your system
 - **Clean, native macOS UI** — built with Flutter, feels at home on macOS 13+
@@ -35,12 +37,14 @@ IciTranscript captures your microphone and system audio simultaneously, transcri
 
 ### AI Summaries
 
-Enable the summary toggle before stopping a session. On first use, the app automatically:
+Enable the summary toggle before stopping a session. On first launch, the app automatically:
 
-1. Downloads the Ollama runtime (~50 MB)
-2. Pulls the Mistral model (~4 GB) — **one-time download, progress shown in the app**
+1. Shows a dedicated setup screen with step-by-step progress
+2. Downloads the Ollama runtime (~106 MB)
+3. Starts the Ollama server
+4. Pulls the Mistral model (~4 GB) — **one-time download, progress shown per step**
 
-After that, summaries are generated entirely on your Mac with no internet connection required. Everything is stored in `~/Library/Application Support/IciTranscript/`.
+After that, summaries are generated entirely on your Mac with no internet connection required. Summaries are saved per session and viewable by clicking the session in the sidebar. Everything is stored in `~/Library/Application Support/IciTranscript/`.
 
 ---
 

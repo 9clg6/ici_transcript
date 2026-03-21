@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:auto_route/auto_route.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -103,6 +105,11 @@ class _SessionDetailScreenState extends ConsumerState<SessionDetailScreen> {
           height: 1,
           color: colorScheme.outlineVariant.withValues(alpha: 0.2),
         ),
+        // Summary panel (if available)
+        if (state.summary != null) ...<Widget>[
+          const Gap(16),
+          _buildSummaryPanel(state, colorScheme, textTheme),
+        ],
         // Transcript content
         Expanded(
           child: ListView.builder(
@@ -117,6 +124,74 @@ class _SessionDetailScreenState extends ConsumerState<SessionDetailScreen> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildSummaryPanel(
+    SessionDetailState state,
+    ColorScheme colorScheme,
+    TextTheme textTheme,
+  ) {
+    return Container(
+      margin: const EdgeInsets.fromLTRB(48, 0, 48, 0),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: colorScheme.primaryContainer.withValues(alpha: 0.3),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: colorScheme.primary.withValues(alpha: 0.2),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Row(
+            children: <Widget>[
+              Icon(
+                Icons.auto_awesome_outlined,
+                size: 16,
+                color: colorScheme.primary,
+              ),
+              const Gap(8),
+              Text(
+                'Résumé IA',
+                style: textTheme.labelLarge?.copyWith(
+                  color: colorScheme.primary,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const Spacer(),
+              IconButton(
+                icon: Icon(
+                  Icons.delete_outline,
+                  size: 16,
+                  color: colorScheme.error.withValues(alpha: 0.7),
+                ),
+                tooltip: 'Supprimer le résumé',
+                onPressed: () {
+                  ref
+                      .read(
+                        sessionDetailViewModelProvider(
+                          sessionId: widget.sessionId,
+                        ).notifier,
+                      )
+                      .deleteSummary();
+                },
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(),
+              ),
+            ],
+          ),
+          const Gap(12),
+          Text(
+            state.summary!,
+            style: textTheme.bodyMedium?.copyWith(
+              color: colorScheme.onSurface,
+              height: 1.6,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -226,7 +301,7 @@ class _SessionDetailScreenState extends ConsumerState<SessionDetailScreen> {
           _ActionButton(
             icon: Icons.copy_outlined,
             label: LocaleKeys.history_detail_copy.tr(),
-            onPressed: () {
+            onPressed: () async {
               final String text = ref
                   .read(
                     sessionDetailViewModelProvider(
@@ -234,30 +309,24 @@ class _SessionDetailScreenState extends ConsumerState<SessionDetailScreen> {
                     ).notifier,
                   )
                   .copyToClipboard();
-              Clipboard.setData(ClipboardData(text: text));
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(LocaleKeys.history_detail_copied.tr()),
-                  duration: const Duration(seconds: 2),
-                ),
-              );
+              await Clipboard.setData(ClipboardData(text: text));
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(LocaleKeys.history_detail_copied.tr()),
+                    duration: const Duration(seconds: 2),
+                  ),
+                );
+              }
             },
             colorScheme: colorScheme,
           ),
           const Gap(8),
-          // Export
+          // Export Markdown
           _ActionButton(
             icon: Icons.file_download_outlined,
             label: LocaleKeys.history_detail_export_markdown.tr(),
-            onPressed: () {
-              ref
-                  .read(
-                    sessionDetailViewModelProvider(
-                      sessionId: widget.sessionId,
-                    ).notifier,
-                  )
-                  .exportMarkdown();
-            },
+            onPressed: () => _exportMarkdown(),
             colorScheme: colorScheme,
           ),
           const Gap(8),
@@ -282,6 +351,47 @@ class _SessionDetailScreenState extends ConsumerState<SessionDetailScreen> {
         ],
       ),
     );
+  }
+
+  Future<void> _exportMarkdown() async {
+    final String content = ref
+        .read(
+          sessionDetailViewModelProvider(sessionId: widget.sessionId).notifier,
+        )
+        .exportMarkdown();
+    if (content.isEmpty) return;
+
+    try {
+      final String home = Platform.environment['HOME'] ?? '';
+      final Directory downloadsDir = Directory('$home/Downloads');
+      final String timestamp = DateTime.now()
+          .toIso8601String()
+          .replaceAll(':', '-')
+          .replaceAll('.', '-');
+      final File file = File(
+        '${downloadsDir.path}/transcript_$timestamp.md',
+      );
+      await file.writeAsString(content);
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Exporté : ${file.path}'),
+            duration: const Duration(seconds: 3),
+            action: SnackBarAction(
+              label: 'OK',
+              onPressed: () {},
+            ),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Erreur export : $e')),
+        );
+      }
+    }
   }
 
   Future<void> _confirmDelete(ColorScheme colorScheme) async {

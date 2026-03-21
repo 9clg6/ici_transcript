@@ -17,7 +17,8 @@ mixin _$SessionDetailState {
 /// La session affichee.
  SessionEntity? get session;/// Les segments de transcription de la session.
  List<TranscriptSegmentEntity> get segments;/// Indique si le titre est en cours d'edition.
- bool get isEditing;
+ bool get isEditing;/// Résumé IA de la session, null si absent.
+ String? get summary;
 /// Create a copy of SessionDetailState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +29,16 @@ $SessionDetailStateCopyWith<SessionDetailState> get copyWith => _$SessionDetailS
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SessionDetailState&&(identical(other.session, session) || other.session == session)&&const DeepCollectionEquality().equals(other.segments, segments)&&(identical(other.isEditing, isEditing) || other.isEditing == isEditing));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SessionDetailState&&(identical(other.session, session) || other.session == session)&&const DeepCollectionEquality().equals(other.segments, segments)&&(identical(other.isEditing, isEditing) || other.isEditing == isEditing)&&(identical(other.summary, summary) || other.summary == summary));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,session,const DeepCollectionEquality().hash(segments),isEditing);
+int get hashCode => Object.hash(runtimeType,session,const DeepCollectionEquality().hash(segments),isEditing,summary);
 
 @override
 String toString() {
-  return 'SessionDetailState(session: $session, segments: $segments, isEditing: $isEditing)';
+  return 'SessionDetailState(session: $session, segments: $segments, isEditing: $isEditing, summary: $summary)';
 }
 
 
@@ -48,7 +49,7 @@ abstract mixin class $SessionDetailStateCopyWith<$Res>  {
   factory $SessionDetailStateCopyWith(SessionDetailState value, $Res Function(SessionDetailState) _then) = _$SessionDetailStateCopyWithImpl;
 @useResult
 $Res call({
- SessionEntity? session, List<TranscriptSegmentEntity> segments, bool isEditing
+ SessionEntity? session, List<TranscriptSegmentEntity> segments, bool isEditing, String? summary
 });
 
 
@@ -65,12 +66,13 @@ class _$SessionDetailStateCopyWithImpl<$Res>
 
 /// Create a copy of SessionDetailState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? session = freezed,Object? segments = null,Object? isEditing = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? session = freezed,Object? segments = null,Object? isEditing = null,Object? summary = freezed,}) {
   return _then(_self.copyWith(
 session: freezed == session ? _self.session : session // ignore: cast_nullable_to_non_nullable
 as SessionEntity?,segments: null == segments ? _self.segments : segments // ignore: cast_nullable_to_non_nullable
 as List<TranscriptSegmentEntity>,isEditing: null == isEditing ? _self.isEditing : isEditing // ignore: cast_nullable_to_non_nullable
-as bool,
+as bool,summary: freezed == summary ? _self.summary : summary // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 /// Create a copy of SessionDetailState
@@ -167,10 +169,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( SessionEntity? session,  List<TranscriptSegmentEntity> segments,  bool isEditing)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( SessionEntity? session,  List<TranscriptSegmentEntity> segments,  bool isEditing,  String? summary)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _SessionDetailState() when $default != null:
-return $default(_that.session,_that.segments,_that.isEditing);case _:
+return $default(_that.session,_that.segments,_that.isEditing,_that.summary);case _:
   return orElse();
 
 }
@@ -188,10 +190,10 @@ return $default(_that.session,_that.segments,_that.isEditing);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( SessionEntity? session,  List<TranscriptSegmentEntity> segments,  bool isEditing)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( SessionEntity? session,  List<TranscriptSegmentEntity> segments,  bool isEditing,  String? summary)  $default,) {final _that = this;
 switch (_that) {
 case _SessionDetailState():
-return $default(_that.session,_that.segments,_that.isEditing);case _:
+return $default(_that.session,_that.segments,_that.isEditing,_that.summary);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -208,10 +210,10 @@ return $default(_that.session,_that.segments,_that.isEditing);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( SessionEntity? session,  List<TranscriptSegmentEntity> segments,  bool isEditing)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( SessionEntity? session,  List<TranscriptSegmentEntity> segments,  bool isEditing,  String? summary)?  $default,) {final _that = this;
 switch (_that) {
 case _SessionDetailState() when $default != null:
-return $default(_that.session,_that.segments,_that.isEditing);case _:
+return $default(_that.session,_that.segments,_that.isEditing,_that.summary);case _:
   return null;
 
 }
@@ -223,7 +225,7 @@ return $default(_that.session,_that.segments,_that.isEditing);case _:
 
 
 class _SessionDetailState implements SessionDetailState {
-  const _SessionDetailState({this.session, required final  List<TranscriptSegmentEntity> segments, this.isEditing = false}): _segments = segments;
+  const _SessionDetailState({this.session, required final  List<TranscriptSegmentEntity> segments, this.isEditing = false, this.summary}): _segments = segments;
   
 
 /// La session affichee.
@@ -239,6 +241,8 @@ class _SessionDetailState implements SessionDetailState {
 
 /// Indique si le titre est en cours d'edition.
 @override@JsonKey() final  bool isEditing;
+/// Résumé IA de la session, null si absent.
+@override final  String? summary;
 
 /// Create a copy of SessionDetailState
 /// with the given fields replaced by the non-null parameter values.
@@ -250,16 +254,16 @@ _$SessionDetailStateCopyWith<_SessionDetailState> get copyWith => __$SessionDeta
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SessionDetailState&&(identical(other.session, session) || other.session == session)&&const DeepCollectionEquality().equals(other._segments, _segments)&&(identical(other.isEditing, isEditing) || other.isEditing == isEditing));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SessionDetailState&&(identical(other.session, session) || other.session == session)&&const DeepCollectionEquality().equals(other._segments, _segments)&&(identical(other.isEditing, isEditing) || other.isEditing == isEditing)&&(identical(other.summary, summary) || other.summary == summary));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,session,const DeepCollectionEquality().hash(_segments),isEditing);
+int get hashCode => Object.hash(runtimeType,session,const DeepCollectionEquality().hash(_segments),isEditing,summary);
 
 @override
 String toString() {
-  return 'SessionDetailState(session: $session, segments: $segments, isEditing: $isEditing)';
+  return 'SessionDetailState(session: $session, segments: $segments, isEditing: $isEditing, summary: $summary)';
 }
 
 
@@ -270,7 +274,7 @@ abstract mixin class _$SessionDetailStateCopyWith<$Res> implements $SessionDetai
   factory _$SessionDetailStateCopyWith(_SessionDetailState value, $Res Function(_SessionDetailState) _then) = __$SessionDetailStateCopyWithImpl;
 @override @useResult
 $Res call({
- SessionEntity? session, List<TranscriptSegmentEntity> segments, bool isEditing
+ SessionEntity? session, List<TranscriptSegmentEntity> segments, bool isEditing, String? summary
 });
 
 
@@ -287,12 +291,13 @@ class __$SessionDetailStateCopyWithImpl<$Res>
 
 /// Create a copy of SessionDetailState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? session = freezed,Object? segments = null,Object? isEditing = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? session = freezed,Object? segments = null,Object? isEditing = null,Object? summary = freezed,}) {
   return _then(_SessionDetailState(
 session: freezed == session ? _self.session : session // ignore: cast_nullable_to_non_nullable
 as SessionEntity?,segments: null == segments ? _self._segments : segments // ignore: cast_nullable_to_non_nullable
 as List<TranscriptSegmentEntity>,isEditing: null == isEditing ? _self.isEditing : isEditing // ignore: cast_nullable_to_non_nullable
-as bool,
+as bool,summary: freezed == summary ? _self.summary : summary // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 

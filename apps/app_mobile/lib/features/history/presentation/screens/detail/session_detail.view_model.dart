@@ -2,6 +2,9 @@ import 'package:core_domain/domain/entities/session.entity.dart';
 import 'package:core_domain/domain/entities/transcript_segment.entity.dart';
 import 'package:core_domain/domain/services/session_history.service.dart';
 import 'package:core_domain/domain/usecases/get_session_detail.use_case.dart';
+import 'package:ici_transcript/application/services/summary.service.dart';
+import 'package:ici_transcript/core/providers/services/session_history.service.provider.dart';
+import 'package:ici_transcript/core/providers/services/summary.service.provider.dart';
 import 'package:ici_transcript/features/history/presentation/screens/detail/session_detail.state.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -14,11 +17,12 @@ part 'session_detail.view_model.g.dart';
 @riverpod
 class SessionDetailViewModel extends _$SessionDetailViewModel {
   late SessionHistoryService _sessionHistoryService;
+  late SummaryService _summaryService;
 
   @override
   Future<SessionDetailState> build({required String sessionId}) async {
-    // TODO: Wire to actual provider when available.
-    // _sessionHistoryService = await ref.watch(sessionHistoryServiceProvider.future);
+    _sessionHistoryService = ref.watch(sessionHistoryServiceProvider);
+    _summaryService = ref.watch(summaryServiceProvider);
     return _loadSession(sessionId);
   }
 
@@ -28,9 +32,13 @@ class SessionDetailViewModel extends _$SessionDetailViewModel {
     if (detail == null) {
       return SessionDetailState.initial();
     }
+    final String? summary = await _summaryService.getSummaryForSession(
+      sessionId,
+    );
     return SessionDetailState(
       session: detail.session,
       segments: detail.segments,
+      summary: summary,
     );
   }
 
@@ -87,6 +95,18 @@ class SessionDetailViewModel extends _$SessionDetailViewModel {
       buffer.writeln('[${segment.source.name.toUpperCase()}] ${segment.text}');
     }
     return buffer.toString();
+  }
+
+  /// Supprime le résumé IA de la session.
+  Future<void> deleteSummary() async {
+    final SessionEntity? session = state.valueOrNull?.session;
+    if (session == null) return;
+    await _summaryService.deleteSummaryForSession(session.id);
+    final SessionDetailState currentState =
+        state.valueOrNull ?? SessionDetailState.initial();
+    state = AsyncData<SessionDetailState>(
+      currentState.copyWith(summary: null),
+    );
   }
 
   /// Active ou desactive le mode edition du titre.

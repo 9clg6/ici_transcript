@@ -1,3 +1,4 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:core_domain/domain/entities/session.entity.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +8,7 @@ import 'package:ici_transcript/features/history/presentation/screens/list/sessio
 import 'package:ici_transcript/features/history/presentation/screens/list/session_list.view_model.dart';
 import 'package:ici_transcript/features/history/presentation/screens/list/widgets/session_card.widget.dart';
 import 'package:ici_transcript/features/settings/presentation/screens/settings/settings.screen.dart';
+import 'package:ici_transcript/foundation/routing/app_router.dart';
 import 'package:ici_transcript/generated/locale_keys.g.dart';
 
 /// Ecran de la liste des sessions affiche dans la sidebar.
@@ -220,9 +222,15 @@ class _SessionListScreenState extends ConsumerState<SessionListScreen> {
     return SessionCardWidget(
       session: session,
       isSelected: isSelected,
-      onTap: () => ref
+      onTap: () {
+        ref
+            .read(sessionListViewModelProvider.notifier)
+            .selectSession(session.id);
+        context.router.navigate(SessionDetailRoute(sessionId: session.id));
+      },
+      onDelete: () => ref
           .read(sessionListViewModelProvider.notifier)
-          .selectSession(session.id),
+          .deleteSession(session.id),
     );
   }
 }

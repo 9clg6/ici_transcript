@@ -7,7 +7,7 @@ part of 'session_detail.view_model.dart';
 // **************************************************************************
 
 String _$sessionDetailViewModelHash() =>
-    r'cfdffe3ba6a65aff82adbf2d0348f80c90566aa5';
+    r'4756c77436d1503d0ae325ea1941a426173ade9d';
 
 /// Copied from Dart SDK
 class _SystemHash {

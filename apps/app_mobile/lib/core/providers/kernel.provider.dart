@@ -10,6 +10,7 @@ part 'kernel.provider.g.dart';
 ///
 /// Le serveur ML (voxmlx-serve) est demarre par [LiveTranscriptionService]
 /// au moment ou l'utilisateur lance un enregistrement.
+/// Ollama est initialise separement par [OllamaSetupViewModel].
 @Riverpod(keepAlive: true)
 Future<void> kernel(Ref ref) async {
   final Log log = Log.named('Kernel');
@@ -21,5 +22,6 @@ Future<void> kernel(Ref ref) async {
   log.info('Base de donnees initialisee');
 
   // Le serveur ML est demarre par LiveTranscriptionService au moment du recording
+  // Ollama est initialise par OllamaSetupViewModel au demarrage
   log.info('Kernel initialise');
 }
