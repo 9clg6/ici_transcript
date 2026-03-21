@@ -9,6 +9,7 @@ import 'package:core_foundation/logging/logger.dart';
 import 'package:ici_transcript/application/services/live_transcription.service.dart';
 import 'package:ici_transcript/core/providers/services/live_transcription.service.provider.dart';
 import 'package:ici_transcript/core/providers/services/process_manager.service.provider.dart';
+import 'package:ici_transcript/core/providers/services/session_history.service.provider.dart';
 import 'package:ici_transcript/features/settings/presentation/screens/settings/settings.view_model.dart';
 import 'package:ici_transcript/features/transcription/presentation/screens/live/live_transcription.state.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -129,6 +130,9 @@ class LiveTranscriptionViewModel extends _$LiveTranscriptionViewModel {
     // Sauvegarder la transcription en local
     await _saveTranscriptToFile(segments);
 
+    // Rafraichir la liste des sessions dans la sidebar
+    await ref.read(sessionHistoryServiceProvider).loadSessions();
+
     // Générer le résumé si l'option est activée
     if (state.isSummaryEnabled && segments.isNotEmpty) {
       await _generateSummary(segments);
@@ -224,16 +228,8 @@ class LiveTranscriptionViewModel extends _$LiveTranscriptionViewModel {
     }
   }
 
-  /// Génère un résumé via Claude API.
+  /// Génère un résumé via Ollama (modèle local Mistral).
   Future<void> _generateSummary(List<TranscriptSegmentEntity> segments) async {
-    final String? apiKey = Platform.environment['ANTHROPIC_API_KEY'];
-    if (apiKey == null || apiKey.isEmpty) {
-      state = state.copyWith(
-        summary: 'ANTHROPIC_API_KEY non configurée.',
-      );
-      return;
-    }
-
     state = state.copyWith(isSummaryLoading: true);
 
     try {
@@ -244,10 +240,10 @@ class LiveTranscriptionViewModel extends _$LiveTranscriptionViewModel {
       final Dio dio = Dio();
       final Response<Map<String, dynamic>> response = await dio.post<
           Map<String, dynamic>>(
-        'https://api.anthropic.com/v1/messages',
+        'http://localhost:11434/v1/chat/completions',
         data: <String, dynamic>{
-          'model': 'claude-haiku-4-5-20251001',
-          'max_tokens': 512,
+          'model': 'mistral',
+          'stream': false,
           'messages': <Map<String, dynamic>>[
             <String, dynamic>{
               'role': 'user',
@@ -258,26 +254,30 @@ class LiveTranscriptionViewModel extends _$LiveTranscriptionViewModel {
         },
         options: Options(
           headers: <String, String>{
-            'x-api-key': apiKey,
-            'anthropic-version': '2023-06-01',
             'content-type': 'application/json',
           },
         ),
       );
 
-      final List<dynamic> content =
-          response.data?['content'] as List<dynamic>? ?? <dynamic>[];
-      final String summary = content.isNotEmpty
-          ? (content.first as Map<String, dynamic>)['text'] as String? ?? ''
-          : '';
+      final List<dynamic> choices =
+          response.data?['choices'] as List<dynamic>? ?? <dynamic>[];
+      String summary = '';
+      if (choices.isNotEmpty) {
+        final Map<String, dynamic> message =
+            (choices.first as Map<String, dynamic>)['message']
+                as Map<String, dynamic>? ??
+            <String, dynamic>{};
+        summary = message['content'] as String? ?? '';
+      }
 
       state = state.copyWith(isSummaryLoading: false, summary: summary);
-      _log.info('Résumé généré');
+      _log.info('Résumé généré via Ollama');
     } catch (e) {
-      _log.error('Erreur génération résumé: $e');
+      _log.error('Erreur génération résumé Ollama: $e');
       state = state.copyWith(
         isSummaryLoading: false,
-        summary: 'Erreur lors de la génération du résumé.',
+        summary:
+            'Ollama non disponible. Lancez : ollama run mistral',
       );
     }
   }
