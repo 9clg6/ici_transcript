@@ -1,0 +1,59 @@
+name: ici_transcript
+description: IciTranscript - Application de transcription vocale
+publish_to: "none"
+version: 0.1.0
+
+environment:
+  sdk: ^3.10.3
+
+resolution: workspace
+
+dependencies:
+  flutter:
+    sdk: flutter
+  core_foundation:
+    path: ../../packages/core_foundation
+  core_domain:
+    path: ../../packages/core_domain
+  core_data:
+    path: ../../packages/core_data
+  core_presentation:
+    path: ../../packages/core_presentation
+  flutter_riverpod: ^2.6.1
+  riverpod_annotation: ^2.6.1
+  freezed_annotation: ^3.0.0
+  json_annotation: ^4.9.0
+  auto_route: ^9.2.2
+  easy_localization: ^3.0.7
+  gap: ^3.0.1
+  dio: ^5.7.0
+  mcp_toolkit: ^0.4.0
+  drift: ^2.28.2
+  rxdart: ^0.28.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  integration_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  build_runner: ^2.4.14
+  freezed: ^3.0.4
+  json_serializable: ^6.9.4
+  riverpod_generator: ^2.6.3
+  auto_route_generator: ^9.0.0
+  flutter_gen_runner: ^5.8.0
+  mockito: ^5.4.0
+  patrol: ^3.13.0
+  patrol_finders: ^2.5.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/translations/
+    - assets/images/
+
+flutter_gen:
+  output: lib/gen
+  integrations:
+    flutter_svg: true

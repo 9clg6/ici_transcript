@@ -1,0 +1,137 @@
+{
+  "common": {
+    "error": {
+      "generic": "Une erreur est survenue",
+      "network": "Verifiez votre connexion internet"
+    },
+    "action": {
+      "save": "Enregistrer",
+      "cancel": "Annuler",
+      "delete": "Supprimer",
+      "confirm": "Confirmer",
+      "retry": "Reessayer",
+      "copy": "Copier",
+      "export": "Exporter",
+      "search": "Rechercher",
+      "close": "Fermer",
+      "edit": "Modifier"
+    },
+    "label": {
+      "today": "Aujourd'hui",
+      "yesterday": "Hier",
+      "older": "Plus ancien",
+      "loading": "Chargement...",
+      "empty": "Aucun element"
+    }
+  },
+  "app": {
+    "name": "IciTranscript",
+    "subtitle": "Transcription vocale"
+  },
+  "transcription": {
+    "title": "Transcription",
+    "start": "Demarrer",
+    "stop": "Arreter",
+    "pause": "Pause",
+    "resume": "Reprendre",
+    "server_starting": "Demarrage du serveur...",
+    "server_ready": "Voxtral Ready",
+    "server_error": "Erreur serveur",
+    "server_stopped": "Serveur arrete",
+    "source_me": "MOI",
+    "source_system": "SYSTEME",
+    "no_session": "Appuyez sur Demarrer pour commencer",
+    "live": {
+      "title": "Transcription en direct",
+      "start": "Demarrer",
+      "stop": "Arreter",
+      "pause": "Pause",
+      "resume": "Reprendre",
+      "recording": "Enregistrement",
+      "recording_time": "Temps d'enregistrement",
+      "speaker_me": "MOI",
+      "speaker_system": "SYSTEME",
+      "no_session": "Appuyez sur Demarrer pour commencer"
+    },
+    "status_bar": {
+      "level": "Niveau",
+      "mic": "Micro",
+      "system": "Systeme"
+    }
+  },
+  "history": {
+    "title": "Historique",
+    "today": "Aujourd'hui",
+    "yesterday": "Hier",
+    "older": "Plus ancien",
+    "search": "Rechercher...",
+    "empty": "Aucune session",
+    "delete_confirm": "Supprimer cette session ?",
+    "list": {
+      "title": "Sessions",
+      "search_placeholder": "Rechercher...",
+      "empty": "Aucune session",
+      "active": "En cours",
+      "completed": "Terminee"
+    },
+    "detail": {
+      "title": "Detail de la session",
+      "copy": "Copier",
+      "export_markdown": "Exporter",
+      "summarize": "Resumer",
+      "delete": "Supprimer",
+      "delete_confirm": "Voulez-vous vraiment supprimer cette session ?",
+      "copied": "Transcription copiee",
+      "exported": "Transcription exportee",
+      "edit_title": "Modifier le titre",
+      "no_session": "Aucune session selectionnee",
+      "duration": "Duree"
+    }
+  },
+  "session": {
+    "duration": "Duree",
+    "rename": "Renommer",
+    "delete": "Supprimer",
+    "export": "Exporter",
+    "summarize": "Resumer",
+    "copy": "Copier",
+    "export_md": "Markdown",
+    "export_txt": "Texte brut",
+    "copied": "Copie dans le presse-papier"
+  },
+  "settings": {
+    "title": "Reglages",
+    "audio": {
+      "title": "Audio",
+      "microphone": "Microphone",
+      "system_audio": "Audio systeme",
+      "system_audio_description": "Capture via ScreenCaptureKit",
+      "level_indicator": "Indicateur de niveau"
+    },
+    "server": {
+      "title": "Serveur ML",
+      "model": "Modele",
+      "port": "Port",
+      "auto_launch": "Lancement automatique"
+    },
+    "shortcuts": {
+      "title": "Raccourcis",
+      "start_stop": "Demarrer/Arreter",
+      "pause": "Pause"
+    },
+    "storage": {
+      "title": "Stockage",
+      "location": "Emplacement",
+      "change": "Modifier...",
+      "database_size": "Taille base de donnees"
+    },
+    "about": "A propos",
+    "version": "Version"
+  },
+  "server_state": {
+    "ready": "Voxtral Ready",
+    "starting": "Demarrage...",
+    "error": "Erreur serveur",
+    "stopped": "Serveur arrete"
+  }
+}

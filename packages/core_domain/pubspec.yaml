@@ -1,0 +1,24 @@
+name: core_domain
+description: Core domain layer containing entities, repositories, and use cases.
+version: 0.0.1
+publish_to: none
+
+environment:
+  sdk: ^3.10.0
+
+resolution: workspace
+
+dependencies:
+  core_foundation:
+    path: ../core_foundation
+  freezed_annotation: ^3.0.0
+  json_annotation: ^4.9.0
+  rxdart: ^0.28.0
+
+dev_dependencies:
+  freezed: ^3.0.4
+  json_serializable: ^6.9.4
+  build_runner: ^2.4.14
+  flutter_lints: ^6.0.0
+  test: ^1.25.0
+  mockito: ^5.4.0
