@@ -98,15 +98,12 @@ class _LiveTranscriptionScreenState
                   .read(liveTranscriptionViewModelProvider.notifier)
                   .recheckPermissions(),
             ),
-          if (state.screenRecordingPermission == 'denied' ||
-              state.screenRecordingPermission == 'notDetermined')
+          if (state.screenRecordingPermission == 'denied')
             _buildPermissionBanner(
               context: context,
               colorScheme: colorScheme,
               icon: Icons.screenshot_monitor,
-              message: state.screenRecordingPermission == 'denied'
-                  ? 'Permission Screen Recording refusée — son système non capturé.'
-                  : 'Autorisez ici_transcript dans Réglages Système › Enregistrement d\'écran, puis relancez l\'app.',
+              message: 'Permission Screen Recording refusée — son système non capturé.',
               isWarning: true,
               onOpenSettings: () => ref
                   .read(liveTranscriptionViewModelProvider.notifier)
