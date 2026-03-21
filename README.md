@@ -14,7 +14,7 @@ IciTranscript captures your microphone and system audio simultaneously, transcri
 - **Real-time transcription** — see your words appear as you speak, powered by [voxmlx](https://github.com/T0mSIlver/voxmlx) and Apple Silicon MLX
 - **Dual audio capture** — microphone + system audio (meetings, videos, calls) captured and mixed simultaneously
 - **Session history** — every transcription is automatically saved and instantly visible in the sidebar
-- **AI summaries** — get a concise summary of any session using a local [Mistral](https://mistral.ai) model via [Ollama](https://ollama.com) — no API key, no internet
+- **AI summaries** — get a concise summary of any session using a local [Mistral](https://mistral.ai) model — Ollama and the model are downloaded automatically on first use, no setup required
 - **Export** — copy transcript to clipboard or export as Markdown / plain text
 - **100% local & private** — your audio never leaves your Mac; no accounts, no subscriptions, no telemetry
 - **Keyboard shortcuts** — start/stop recording from anywhere on your system
@@ -33,22 +33,14 @@ IciTranscript captures your microphone and system audio simultaneously, transcri
 
 > **Why Apple Silicon?** The transcription engine uses MLX, Apple's machine learning framework optimised for the M-series neural engine. Intel Macs are not supported.
 
-### Optional: AI Summaries
+### AI Summaries
 
-To enable the AI summary feature you need [Ollama](https://ollama.com) with Mistral installed:
+Enable the summary toggle before stopping a session. On first use, the app automatically:
 
-```bash
-# Install Ollama (https://ollama.com)
-brew install ollama
+1. Downloads the Ollama runtime (~50 MB)
+2. Pulls the Mistral model (~4 GB) — **one-time download, progress shown in the app**
 
-# Pull the Mistral model (~4 GB)
-ollama pull mistral
-
-# Start the Ollama server (runs automatically on login after install)
-ollama serve
-```
-
-Summaries are generated entirely on your Mac — no internet connection required.
+After that, summaries are generated entirely on your Mac with no internet connection required. Everything is stored in `~/Library/Application Support/IciTranscript/`.
 
 ---
 
