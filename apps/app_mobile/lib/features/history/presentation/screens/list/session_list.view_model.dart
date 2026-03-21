@@ -33,6 +33,11 @@ class SessionListViewModel extends _$SessionListViewModel {
     state = state.copyWith(selectedSessionId: id);
   }
 
+  /// Désélectionne la session courante.
+  void clearSelection() {
+    state = state.copyWith(selectedSessionId: null);
+  }
+
   /// Supprime une session par son identifiant.
   Future<void> deleteSession(String id) async {
     await _sessionHistoryService.deleteSession(id);

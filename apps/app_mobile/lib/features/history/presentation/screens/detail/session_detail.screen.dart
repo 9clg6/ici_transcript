@@ -20,11 +20,15 @@ class SessionDetailScreen extends ConsumerStatefulWidget {
   /// Cree une instance de [SessionDetailScreen].
   const SessionDetailScreen({
     @PathParam('sessionId') required this.sessionId,
+    this.onClose,
     super.key,
   });
 
   /// Identifiant de la session a afficher.
   final String sessionId;
+
+  /// Callback pour fermer l'overlay (optionnel, utilisé hors routing).
+  final VoidCallback? onClose;
 
   @override
   ConsumerState<SessionDetailScreen> createState() =>
@@ -63,27 +67,24 @@ class _SessionDetailScreenState extends ConsumerState<SessionDetailScreen> {
     final ColorScheme colorScheme = Theme.of(context).colorScheme;
     final TextTheme textTheme = Theme.of(context).textTheme;
 
-    return Scaffold(
-      backgroundColor: colorScheme.surface,
-      body: asyncState.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (Object error, StackTrace stackTrace) =>
-            Center(child: Text(LocaleKeys.common_error_generic.tr())),
-        data: (SessionDetailState state) {
-          if (state.session == null) {
-            return Center(
-              child: Text(
-                LocaleKeys.history_detail_no_session.tr(),
-                style: textTheme.bodyLarge?.copyWith(
-                  color: colorScheme.onSurfaceVariant,
-                ),
+    return asyncState.when(
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (Object error, StackTrace stackTrace) =>
+          Center(child: Text(LocaleKeys.common_error_generic.tr())),
+      data: (SessionDetailState state) {
+        if (state.session == null) {
+          return Center(
+            child: Text(
+              LocaleKeys.history_detail_no_session.tr(),
+              style: textTheme.bodyLarge?.copyWith(
+                color: colorScheme.onSurfaceVariant,
               ),
-            );
-          }
+            ),
+          );
+        }
 
-          return _buildContent(state, colorScheme, textTheme);
-        },
-      ),
+        return _buildContent(state, colorScheme, textTheme);
+      },
     );
   }
 
@@ -423,7 +424,7 @@ class _SessionDetailScreenState extends ConsumerState<SessionDetailScreen> {
           )
           .deleteSession();
       if (mounted) {
-        context.router.maybePop();
+        widget.onClose?.call();
       }
     }
   }
