@@ -127,7 +127,13 @@ class LiveTranscriptionViewModel extends _$LiveTranscriptionViewModel {
     await _liveService?.stopTranscription();
 
     final List<TranscriptSegmentEntity> segments = state.segments;
-    state = state.copyWith(isRecording: false, isPaused: false);
+    // Vider les segments immédiatement — chaque session commence vierge
+    state = state.copyWith(
+      isRecording: false,
+      isPaused: false,
+      segments: <TranscriptSegmentEntity>[],
+      duration: Duration.zero,
+    );
 
     // Sauvegarder la transcription en local
     await _saveTranscriptToFile(segments);
@@ -264,10 +270,11 @@ class LiveTranscriptionViewModel extends _$LiveTranscriptionViewModel {
           .map((TranscriptSegmentEntity s) => s.text)
           .join('\n');
 
+      // API native Ollama /api/chat (compatible toutes versions)
       final Dio dio = Dio();
       final Response<Map<String, dynamic>> response = await dio.post<
           Map<String, dynamic>>(
-        'http://localhost:11434/v1/chat/completions',
+        'http://localhost:11434/api/chat',
         data: <String, dynamic>{
           'model': 'mistral',
           'stream': false,
@@ -286,16 +293,11 @@ class LiveTranscriptionViewModel extends _$LiveTranscriptionViewModel {
         ),
       );
 
-      final List<dynamic> choices =
-          response.data?['choices'] as List<dynamic>? ?? <dynamic>[];
-      String summary = '';
-      if (choices.isNotEmpty) {
-        final Map<String, dynamic> message =
-            (choices.first as Map<String, dynamic>)['message']
-                as Map<String, dynamic>? ??
-            <String, dynamic>{};
-        summary = message['content'] as String? ?? '';
-      }
+      // Réponse native : { "message": { "content": "..." } }
+      final Map<String, dynamic> message =
+          response.data?['message'] as Map<String, dynamic>? ??
+              <String, dynamic>{};
+      final String summary = message['content'] as String? ?? '';
 
       state = state.copyWith(isSummaryLoading: false, summary: summary);
       _log.info('Résumé généré via Ollama');
