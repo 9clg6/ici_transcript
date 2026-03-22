@@ -187,6 +187,25 @@ final class LiveTranscriptionService {
   Future<void> stopTranscription() async {
     _log.info('Arret de la transcription en direct');
 
+    // Sauvegarder la phrase en cours si non vide (au cas où 'done' n'arrive pas)
+    final SessionEntity? currentSession = currentSessionStream.valueOrNull;
+    if (currentSession != null && _currentPhrase.isNotEmpty) {
+      final String text = _currentPhrase.toString().trim();
+      if (text.isNotEmpty) {
+        _log.info('Flush phrase en cours avant arret: "$text"');
+        final TranscriptSegmentEntity segment = TranscriptSegmentEntity(
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          sessionId: currentSession.id,
+          source: AudioSource.input,
+          text: text,
+          timestampMs: _currentPhraseStartMs,
+          createdAt: DateTime.now(),
+        );
+        await _transcriptionService.saveSegment(segment);
+      }
+      _currentPhrase = StringBuffer();
+    }
+
     // Annuler le timer de commit
     _commitTimer?.cancel();
     _commitTimer = null;
@@ -246,6 +265,17 @@ final class LiveTranscriptionService {
       // Mettre a jour le segment en cours dans l'UI (en temps reel)
       _updateCurrentSegmentInUI(currentSession);
     } else if (event.type == 'response.audio_transcript.done') {
+      // Retirer le segment temporaire du stream UI avant de sauvegarder le final
+      final List<TranscriptSegmentEntity> currentSegments =
+          List<TranscriptSegmentEntity>.from(
+            _transcriptionService.segmentsStream.value,
+          );
+      if (currentSegments.isNotEmpty &&
+          currentSegments.last.id.startsWith('current_')) {
+        currentSegments.removeLast();
+        _transcriptionService.segmentsStream.add(currentSegments);
+      }
+
       // Phrase terminee — sauvegarder le segment final
       final String finalText = event.text ?? _currentPhrase.toString();
       if (finalText.trim().isNotEmpty) {
