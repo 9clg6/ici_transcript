@@ -40,6 +40,11 @@ class AudioCapturePlugin: NSObject, FlutterPlugin {
 
     private var isCapturing = false
 
+    // Track screen capture permission state without triggering a dialog.
+    // Set to true when SCStream starts successfully, false when it fails with
+    // a permission error. nil = unknown (never attempted).
+    private var screenCapturePermissionGranted: Bool? = nil
+
     // Target format: 16 kHz, mono, PCM Int16
     private static let targetSampleRate: Double = 16000
     private static let targetChannels: AVAudioChannelCount = 1
@@ -159,15 +164,37 @@ class AudioCapturePlugin: NSObject, FlutterPlugin {
         @unknown default: micStatus = "unknown"
         }
 
+        // Do NOT call CGPreflightScreenCaptureAccess() here: in macOS 15 (Sequoia)
+        // it triggers the TCC consent dialog when status is "notDetermined".
+        // Instead, use the cached result from the last SCStream attempt.
         let screenStatus: String
-        if #available(macOS 10.15, *) {
-            screenStatus = CGPreflightScreenCaptureAccess() ? "authorized" : "notDetermined"
+        if let granted = screenCapturePermissionGranted {
+            screenStatus = granted ? "authorized" : "denied"
         } else {
-            screenStatus = "authorized" // Pas de permission requise avant macOS 10.15
+            // Never attempted a capture yet — report as notDetermined without prompting
+            screenStatus = "notDetermined"
         }
 
         NSLog("[AudioCapturePlugin] checkPermissions: mic=\(micStatus) screen=\(screenStatus)")
         result(["mic": micStatus, "screenRecording": screenStatus])
+    }
+
+    // MARK: - Screen Capture Permission Detection
+
+    /// Returns true if the error is caused by missing Screen Recording / System Audio permission.
+    /// ScreenCaptureKit errors are in the SCStreamErrorDomain.
+    /// Error code -3801 = SCStreamErrorNotEntitled (user hasn't granted permission).
+    @available(macOS 13.0, *)
+    private func isScreenCapturePermissionError(_ error: Error) -> Bool {
+        let nsError = error as NSError
+        // SCStreamErrorDomain, code -3801 = SCStreamErrorNotEntitled (no permission)
+        // code -3800 = SCStreamErrorAttemptToStartStreamState (already running)
+        if nsError.domain == "com.apple.screencapturekit.error" {
+            return nsError.code == -3801 || nsError.code == -3814
+        }
+        // Fallback: check the error description for permission-related keywords
+        let desc = error.localizedDescription.lowercased()
+        return desc.contains("permission") || desc.contains("not entitled") || desc.contains("access denied")
     }
 
     // MARK: - Open System Settings
@@ -241,8 +268,10 @@ class AudioCapturePlugin: NSObject, FlutterPlugin {
                     guard let self = self else { return }
                     if let error = error {
                         NSLog("[AudioCapturePlugin] System audio capture failed: \(error.localizedDescription)")
-                        // Vérifier si c'est une erreur de permission Screen Recording
-                        if #available(macOS 10.15, *), !CGPreflightScreenCaptureAccess() {
+                        // Detect permission errors by their error code/domain
+                        let isPermissionError = self.isScreenCapturePermissionError(error)
+                        self.screenCapturePermissionGranted = false
+                        if isPermissionError {
                             NSLog("[AudioCapturePlugin] Screen Recording denied — falling back to mic only")
                             DispatchQueue.main.async {
                                 // Notifier Dart que l'audio bureau est indisponible (informatif, pas bloquant)
@@ -256,6 +285,8 @@ class AudioCapturePlugin: NSObject, FlutterPlugin {
                         }
                         // Autre erreur non-permission : continuer avec le micro seulement
                         NSLog("[AudioCapturePlugin] Erreur audio système non-critique, micro seul actif")
+                    } else {
+                        self.screenCapturePermissionGranted = true
                     }
                     DispatchQueue.main.async { result(nil) }
                 }

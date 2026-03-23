@@ -31,14 +31,14 @@ class LiveTranscriptionViewModel extends _$LiveTranscriptionViewModel {
   LiveTranscriptionState build() {
     _liveService = ref.watch(liveTranscriptionServiceProvider);
 
-    // Ecouter les streams UNE seule fois
+    // Ecouter les streams et vérifier les permissions UNE seule fois.
+    // Ne pas appeler recheckPermissions() à chaque rebuild : en macOS 15,
+    // CGPreflightScreenCaptureAccess() peut déclencher le dialog de permission.
     if (!_subscribed) {
       _subscribed = true;
       _listenToStreams();
+      Future<void>.microtask(() => recheckPermissions());
     }
-    // Re-vérifier les permissions à chaque rebuild (évite que initial() écrase
-    // les valeurs connues si Riverpod invalide le provider)
-    Future<void>.microtask(() => recheckPermissions());
 
     ref.onDispose(() {
       _durationTimer?.cancel();
